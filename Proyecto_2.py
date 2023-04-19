@@ -120,7 +120,6 @@ names_unidireccional = [
     'TIJUANA', 'SAN FELIPE', 'ENSENADA', 'SAN QUINTIN', 'SANTA ROSALIA', 'SANTO DOMINGO', 'LA PAZ', 'CABO SAN LUCAS'
 ]
 
-
 formed_graph = [
     [0,90,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#cancun
     [0,0,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#valladolid
@@ -367,6 +366,41 @@ def generate_states(graph, available_nodes_names):
             nodes_connection_weights.append([available_nodes_names[matrix_row_index], connections_and_weights])
     return nodes_tuples, nodes_connection_weights
 
+def generate_unidirectional_weights(tree):
+    unidirectional_tree = tree[0].copy()
+    unidirectional_weights = []
+
+    #iterate through the tuples to obtain reversed connection
+    for node_tuple in tree[0]:
+        city1, city2 = node_tuple
+        unidirectional_tree.append((city2, city1))
+    
+    #obtain the reversed weights
+    reversed_weights = {}
+    for weight in tree[1]:
+        for connection in weight[1]:
+            if connection[0] not in reversed_weights:
+                reversed_weights[connection[0]] = [(weight[0], connection[1])]
+            else:
+                previuos_reversed_weight_value = reversed_weights[connection[0]]
+                previuos_reversed_weight_value.append((weight[0], connection[1]))
+                reversed_weights[connection[0]] = previuos_reversed_weight_value
+    
+    # merge the weight lists
+    for weight in tree[1]:
+        current_reversed_weights = []
+        try:
+            current_reversed_weights = reversed_weights[weight[0]]
+        except:
+            current_reversed_weights = []
+        
+        current_connections = weight[1].copy()
+        if current_reversed_weights != []:
+            for current_reversed_weight in current_reversed_weights:
+                current_connections.append(current_reversed_weight)
+        
+        unidirectional_weights.append[(weight[0], current_connections)]
+
 
 def greedy_search(tree,start_node,goal):
     path = [start_node]
@@ -394,8 +428,15 @@ def greedy_search(tree,start_node,goal):
         if path[-1] == goal:
             return path
   
-def A_estrella_search(tree,start_node,goal):
+def A_star(tree, start_node, goal):
+    if start_node == goal:
+        return ([start_node], 0)
+    
+    iteration_counter = 0
+    print(f"\n--- search iteration {iteration_counter}")
+    path = {}
 
+def A_estrella_search(tree,start_node,goal):
     path = [start_node]
 
     if start_node== goal:
@@ -421,7 +462,6 @@ def A_estrella_search(tree,start_node,goal):
             return path
           
 def A_estrella_ponderada_search(tree,start_node,goal):
-
     path = [start_node]
 
     if start_node== goal:
