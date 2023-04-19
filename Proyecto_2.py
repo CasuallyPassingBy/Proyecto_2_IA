@@ -1,3 +1,36 @@
+'''
+    Proyecto: Proyecto 2º Parcial: Busquedas Informadas
+    Universidad Panamericana
+    Clase de Inteligencia Artificial
+    Alejandro Laphond Payan
+    Mauricio Moscoso Mandujano
+    Fernando Ruiz de Huidobro Zapata
+    26-abril-2023
+    version 0.01
+
+    El presente codigo calcula la distancia euclideana entre dos ciudades 
+    de los Estados Unidos Mexicanos, utilizando las coordenadas geograficas 
+    de un par de ciudades. Esta distancia es utilizada para obtener los
+    valores de la heuristica para el proyecto del 2do Parcial de la materia.
+    
+    Una vez que se ha obtenido el valor de la heurística del proyecto, el programa le pregunta al usuario que algoritmo 
+    de busqueda informada quiere utilizar. Una vez que el usuario decide que algóritmo usar, el codigo lo ejecuta y muestra
+    los datos pertinentes de cada uno de los algoritmos
+
+    Ejecucion del programa
+        Opcion 1) En una terminal que sobre el directorio donde radica este archivo escribir:
+                    python Proyecto_2_IA.py
+        Opcion 2) Abrir el archivo con un editor de codigo y presionar el boton ejecutar
+    
+    Entradas:
+        1) El nombre de una ciudad en Mexico que deseemos sea el destino y la ciudad a partir de la cual deseamos empezar la busqueda.
+    
+    Salidas:
+        1) Imprime el arbol de busqueda procesado tomando en cuenta la heurística. Dependiendo del algoritmo que el usuario el camino y los datos 
+        particulares de cada algoritmo. Muestra el tiempo de ejecución de cada algoritmo y muestra error si es que aparece uno.
+'''
+
+
 formed_graph_unidireccional_pesos_heuristica = [
     [0, 143, 209, 407, 289, 590, 325, 725, 820, 494, 910, 1029, 961, 1128, 1178, 1244, 1140, 1294, 1317, 1207, 1448, 1349, 1359, 1472, 1079, 1381, 1217, 1244, 1410, 1345, 1583, 994, 1089, 1359, 1487, 1462, 1654, 1145, 1495, 1504, 1713, 1599, 1629, 1854, 1770, 1847, 1293, 1863, 2023, 2028, 1197, 1207, 1468, 2115, 2312, 2144, 1287, 1613, 2277, 2383, 2447, 1759, 1990, 1472, 2522, 2544, 1613, 2635, 2581, 3098, 3236, 2990, 3180, 3079, 2658, 2601, 2427, 2380], 
     [143, 0, 125, 264, 157, 449, 241, 583, 683, 357, 767, 888, 818, 985, 1037, 1102, 997, 1151, 1176, 1066, 1305, 1209, 1217, 1331, 937, 1238, 1077, 1107, 1275, 1206, 1441, 852, 956, 1222, 1352, 1335, 1513, 1021, 1362, 1366, 1579, 1471, 1505, 1735, 1632, 1709, 1178, 1733, 1919, 1904, 1084, 1115, 1365, 2019, 2198, 2027, 1193, 1516, 2196, 2295, 2340, 1649, 1903, 1385, 2434, 2438, 1532, 2540, 2480, 3007, 3143, 2894, 3085, 2980, 2548, 2484, 2306, 2255], 
@@ -170,11 +203,11 @@ formed_graph = [
 ]
 
 names_formed_graph = [
-    'Cancun','Valladolid','Felipe Carrillo Puerto','Campeche','Merida','Chetumal','Francisco Escarcega','Ciudad Del Carmen','Villa Hermosa','Tuxtla','Acayucan','Tehuantepec','Alvarado','Oaxaca','Tehuacan','Puerto Angel',
-    'Izucar De Matamoros','Pinotepa Nacional','Acapulco','Chilpancingo','Iguala','Puebla','Cordova','Veracruz','Cuernavaca','Ciudad De México','Ciudad Altamirano','Zihuatanejo','Playa Azul','Colima','Manzanillo','Toluca De Lerdo','Pachuca De Soto','Queretaro',
-    'Atlacomulco','Tuxpan De Rodriguez Cano','San Luis Potosi','Salamanca','Morelia','Tampico','Guanajuato','Guadalajara','Zacatecas','Aguascalientes','Tepic','Mazatlan','Culiacán','Topolobampo','Ciudad Obregón','Guaymas','Hermosillo','Durango','Torreón',
-    'Hidalgo del Parral','Chihuahua','Janos','Agua Prieta','Juarez','Santa Ana','Mexicalli','San Felipe','Tijuana','Ensenada','San Quintin','Santa Rosalia','Santo Domingo','La Paz','Cabo San Lucas','Ciudad Victoria','Monterrey','Matamoros','Nuevo Laredo',
-    'Piedras Negras','Reynosa','Soto la Marina','Monclova','Ojinaga','Tlaxcala'
+    'CANCUN','VALLADOLID','FELIPE CARRILLO PUENTE','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLA HERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
+    'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOVA','VERACRUZ','CUERNAVACA','CIUDAD DE MÉXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
+    'ATLACOMULCO','TUXPAN DE RODRIGUEZ CANO','SAN LUIS POTOSI','SALAMANCA','MORELIA','TAMPICO','GUANANJUATO','GUADALAJARA','ZACATECAS','AGUASCALIENTES','TEPIC','MAZATLAN','CULIACÁN','TOPOLOBAMPO ','CIUDAD OBREGÓN','GUAYMAS','HERMOSILLO','DURANGO','TORREÓN',
+    'HIDALGO DEL PARRAL','CHIHUAHUA','JANOS','AGUA PRIETA','JUAREZ','SANTA ANA','MEXICALLI','SAN FELIPE','TIJUANA','ENSENADA','SAN QUINTIN','SANTA ROSALIA','SANTO DOMINGO','LA PAZ','CABO SAN LUCAS','CIUDAD VICTORIA','MONTERREY','MATAMOROS','NUEVO LAREDO',
+    'PIEDRAS NEGRAS','REYNOSA','SOTO LA MARINA','MONCLOVA','OJINAGA','TLAXCALA'
 ]
 
 ###############################
