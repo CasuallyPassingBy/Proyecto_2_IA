@@ -428,13 +428,6 @@ def greedy_search(tree,start_node,goal):
         if path[-1] == goal:
             return path
   
-def A_star(tree, start_node, goal):
-    if start_node == goal:
-        return ([start_node], 0)
-    
-    iteration_counter = 0
-    print(f"\n--- search iteration {iteration_counter}")
-    path = {}
 
 def A_estrella_search(tree,start_node,goal):
     path = [start_node]
