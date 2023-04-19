@@ -413,3 +413,24 @@ def A_estrella_ponderada_search(tree,start_node,goal):
 
         if path[-1] == goal:
             return path
+
+       #esqueleto de beam search, falta hacer que embone pero me dicen que opinas
+   # function beamSearch(problem, n):# initialize an empty queue
+   # startState = problem.getStartState()  
+  #  queue.append([startState])   
+   # while queue:    
+   #     paths = []  
+   #     for path in queue: 
+   #         state = path[-1]   
+   #         if problem.isGoalState(state):   
+   #             return path    
+   #         successors = problem.getSuccessors(state)  
+   #         for successor in successors:  
+  #              newPath = path[:]  th
+   #             newPath.append(successor)   
+   #             paths.append(newPath)   
+   #     if not paths:  
+   #         return None
+    #   
+   #     queue = sorted(paths, key=lambda x: problem.heuristic(x[-1][0], problem))[:n]  
+   # return None  
