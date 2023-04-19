@@ -279,6 +279,7 @@ cities_coordinates = {
 #   goal = tupla que contiene la latitud y longitud de la ciudad destino
 # salida:
 #   regresa el valor numerico de la distancia haversine redondeado
+
 def haversine_distance_between_cities(origin,goal):
     constante_R = 6371
     lat1 = origin[0]*((math.pi)/180)
@@ -319,10 +320,9 @@ def calcular_heuristica_distancia_de_linea_recta(goal):
     # regresa el diccionario con los valores de la heuristica para la ciudad objetivo correspondiente
     return heuristic_linear_straight_distance
   
- def generate_states(graph):
+def generate_states(graph, available_nodes_names):
     nodes_tuples = []
     nodes_connection_weights = []
-    available_nodes_names = ['Arad','Timisoara','Sibiu','Zerind','Lugoj','Rimnicu Vilcea','Fagaras','Oradea','Mehadia','Craiova','Pitesti','Bucarest','Drobeta','Giurgiu','Urziceni','Hirsova','Vaslui','Efoire','Iasi','Neamt'] 
     for matrix_row_index in range(len(graph)):
         #print('matrix row' , graph[matrix_row_index])
         connections_and_weights = []
@@ -333,9 +333,9 @@ def calcular_heuristica_distancia_de_linea_recta(goal):
         if len(connections_and_weights) != 0:
             nodes_connection_weights.append([available_nodes_names[matrix_row_index], connections_and_weights])
     return nodes_tuples, nodes_connection_weights
-  
-  def greedy_search(tree,start_node,goal):
 
+
+def greedy_search(tree,start_node,goal):
     path = [start_node]
 
     if start_node == goal:
@@ -358,11 +358,10 @@ def calcular_heuristica_distancia_de_linea_recta(goal):
 
         path.append(valor_minimo[0])
 
-
         if path[-1] == goal:
             return path
   
-  def A_estrella_search(tree,start_node,goal):
+def A_estrella_search(tree,start_node,goal):
 
     path = [start_node]
 
@@ -388,7 +387,7 @@ def calcular_heuristica_distancia_de_linea_recta(goal):
         if path[-1] == goal:
             return path
           
- def A_estrella_ponderada_search(tree,start_node,goal):
+def A_estrella_ponderada_search(tree,start_node,goal):
 
     path = [start_node]
 
