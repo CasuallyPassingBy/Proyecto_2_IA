@@ -209,6 +209,7 @@ names_formed_graph = [
     'PIEDRAS NEGRAS','REYNOSA','SOTO LA MARINA','MONCLOVA','OJINAGA','TLAXCALA'
 ]
 
+
 ###############################
 ###############################
 ##### Dependencias #####
