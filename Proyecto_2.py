@@ -422,7 +422,6 @@ def generate_unidirectional_weights(tree):
 #       la distancia de la linea recta, hasta la ciudad meta
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la hueristica
-#   cost: es el costo del camino según la euristica 
 def greedy(tree, start, goal, h_sld):
     if start == goal:
         # returns the path along with its transition cost
@@ -706,7 +705,7 @@ def beam_search(tree, start_node, goal, n):
                 return path
         
         # If there are no goal states in the current paths, select the n best paths based on their heuristic value.
-        queue = sorted(paths, key=lambda x: haversine_heuristic(x[-1], goal))[:n]
+        queue = sorted(paths, key=lambda x: haversine_hueristic(x[-1], goal))[:n]
         
         # If there are no more paths to explore, return None to indicate failure.
         if not queue:
@@ -751,6 +750,109 @@ def Steepest_Hill_Climb(tree, start, goal):
                 cost += weight[1]
                 break
             break
+
+def generate_initial_solution(tree, start):
+    pass
+
+def simmulated_annealing(solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir):
+    pass
+
+
+def submenu_1(tree, start, opcion):
+    goal = validate_in("Ingrese la ciudad meta: ")
+    heuristica = calcular_heuristica_distancia_de_linea_recta(goal)
+    
+    if opcion == 1:
+        return greedy(tree, start, goal, heuristica)
+    elif opcion == 2:
+        return a_estrella(tree,start,goal,heuristica)
+    else:
+        return a_estrella_ponderada(tree,start,goal,heuristica)
+
+def submenu_2(tree, start):
+    goal = validate_in("Ingrese la ciudad meta: ")
+    numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
+
+def submenu_3(tree, start):
+    pass
+
+def submenu_4(tree, start):
+    pass
+
+def submenu_5(tree, start):
+    solucion_inicial = generate_initial_solution(tree, start)
+    temperatura_inicial = validate_int("¿Cual es la temperatura inicial? ")
+    temperatura_final = 0
+    numero_de_iteraciones = validate_int("Ingrese el número de iteraciones por temperatura: ")
+    porcentaje_para_reducir = validate_int("Ingrese el número de porcentaje para reducir la temperatura: ")
+    return simmulated_annealing(solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir)
+
+def validate_in(command) -> str:
+    """Es una función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades"""
+    while True:
+        city = input(command).upper()
+        if city in names_formed_graph:
+            break
+        print("El nombre de la ciudad ingresada no esta presente.")
+    return city
+
+def validate_int(command) -> int:
+    """Es una función que se asegura que se ingreso un número no negativo"""
+    while True:
+        try:
+            numero_ingresado = int(input(command))
+            if numero_ingresado >= 0:
+                break
+            print("Ingrese un número no negativo")
+        except:
+            print("Ingrese un número")
+    return numero_ingresado
+
+
+def menu():
+
+    ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
+
+    print("------Menú------")
+    print("\n 1) Greedy Best First Search")
+    print("\n 2) A* Search")
+    print("\n 3) Weighted A* Search")
+    print("\n 4) Beam Search")
+    print("\n 5) Steepest Hill Climbing Search")
+    print("\n 6) Stochastic Hill Climbing Search")
+    print("\n 7) Simulated Annealing Search")
+
+    while True:
+        opcion = int(input("\n¿Qué número de algoritmo del menu anterior desea correr (1,2,3,4,5,6,7)? "))
+        if opcion > 7:
+            print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7)")
+        elif opcion < 1:
+            print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7)")
+        else:
+            break
+
+    if opcion < 7:
+        tree = generate_states(formed_graph, names_formed_graph)
+        print('\ntree = ', tree[0], '\n')
+        print('weights = ', tree[1], '\n')
+    else:
+        tree = generate_states(formed_graph_unidireccional_pesos_heuristica, names_unidireccional)
+        print('\ntree = ', tree[0], '\n')
+        print('weights = ', tree[1], '\n')
+
+    switch = {
+        1: submenu_1(tree, ciudad_origen, opcion),
+        2: submenu_1(tree, ciudad_origen, opcion),
+        3: submenu_1(tree, ciudad_origen, opcion),
+        4: submenu_2(tree, ciudad_origen),
+        5: submenu_3(tree, ciudad_origen),
+        6: submenu_4(tree, ciudad_origen),
+        7: submenu_5(tree, ciudad_origen)
+    }
+
+    return switch[opcion]
+    
+menu()
 
 def main():
     pass
