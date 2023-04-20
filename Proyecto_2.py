@@ -324,6 +324,16 @@ def haversine_distance_between_cities(origin,goal):
     # calcula la distancia haversine entre dos ciudades y regresa su valor redondeado
     return round(distancia_haversine)
 
+# Transforma las ciudades en las tuplas de latitud y longitud para poder calcular
+# la distancia de haversine de manera mas comoda:
+#   origin = nombre de la ciudad de origen
+#   goal = nombre de la ciudad meta
+# salida:
+#   regresa el valor númerico de la distancia haversine redondeado
+def haversine_hueristic(origin, goal):
+    origin_coordinates = cities_coordinates[origin]
+    goal_coordinates = cities_coordinates[goal]
+    return haversine_distance_between_cities(origin_coordinates, goal_coordinates)
 ###############################
 ###############################
 ##### Funciones o Clases Principales #####
@@ -401,102 +411,345 @@ def generate_unidirectional_weights(tree):
         
         unidirectional_weights.append[(weight[0], current_connections)]
 
+# encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
+# el algoritmo de Greedy-Best First Search:
+# entrada:
+#   start: nombre de la ciudad de inicio
+#   goal: nombre de la ciudad meta
+#   tree: tupla que contiene las aristas y sus pesos
+#   h_sld: es un diccionario[string][int] que contiene la hueristica de
+#       la distancia de la linea recta, hasta la ciudad meta
+# salida:
+#   path: es el camino encontrado con el menor peso a partir de la hueristica
+#   cost: es el costo del camino según la euristica 
+def greedy(tree, start, goal, h_sld):
+    if start == goal:
+        # returns the path along with its transition cost
+        return ([start],0)
+    
+    # here we will store all the paths availables as we process them
+    # to store the first path, we need to obtain its heuristic value
+    path = {h_sld[start]: [start]}
 
-def greedy_search(tree,start_node,goal):
-    path = [start_node]
+    # update the iteration number
+    iteration_counter = 1
+    while True:
+        
+        # select the path with the lowest cost
+        key_path_with_lower_value = min([int(key) for key, values in path.items()])
+        
+        current_node = path[key_path_with_lower_value][-1]
+        if current_node == goal:
+            # returns the path along with its transition cost
+            return (path[key_path_with_lower_value], key_path_with_lower_value)
 
-    if start_node == goal:
-        return path
+        # search for the childs of the current node
+        childs = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == current_node]
+        # these childs have the cost of the action, we need to find its heuristic value
+        if childs != []:
+            childs_with_h_values = []
+
+            for child in childs[0]:
+                child_name = child[0]
+                # get the heuristic cost of the node
+                child_heuristic_value = h_sld[child_name]
+
+                # calculate the transition cost of the current node to the current child via
+                #   f(n) = h(n)
+                total_transition_cost = child_heuristic_value
+
+                # save the path with the corresponding transition cost
+                childs_with_h_values.append((child_name,total_transition_cost))
+
+            sorted_childs_with_h_values = sorted(childs_with_h_values, key = lambda x: x[1])
+            # update the paths expanded so far; in this way, we save the alternative paths
+            for child in sorted_childs_with_h_values:
+                temp_updated_path = path[key_path_with_lower_value].copy()
+                temp_updated_path.append(child[0])
+                # stores the new paths in the path dictionary
+                path[child[1]] = temp_updated_path
+
+            # delete the current path (old)
+            del path[key_path_with_lower_value]
+        else:
+            # After visiting its neighbors, we mark the node as "visited"
+            return 'Unable to find a path'
+        
+        iteration_counter += 1
+        
+# encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
+# el algoritmo de A* Search:
+# entrada:
+#   start: nombre de la ciudad de inicio
+#   goal: nombre de la ciudad meta
+#   tree: tupla que contiene las aristas y sus pesos
+#   h_sld: es un diccionario[string][int] que contiene la hueristica de
+#       la distancia de la linea recta, hasta la ciudad meta
+# salida:
+#   path: es el camino encontrado con el menor peso a partir de la hueristica
+#   cost: es el costo del camino según la euristica y el costo de transisión entre nodos
+def a_estrella(tree,start,goal, h_sld):
+    
+    if start == goal:
+        # returns the path along with its transition cost
+        return ([start],0)
+    
+    iteration_counter = 0
+    print('\n--- search iteration {} ---'.format(iteration_counter))
+    
+    # here we will store all the paths availables as we process them
+    #   to store the first path, we need to obtain its heuristic value
+    path = {h_sld[start]: [start]}
+    print('path initialised = ', path)
+
+    # update the iteration number
+    iteration_counter += 1
 
     while True:
-        nodo_actual = path[-1]
+        print('\n--- search iteration {} ---'.format(iteration_counter))
+        
+        # select the path with the lowest cost
+        key_path_with_lower_value = min([int(key) for key, values in path.items()])
+        print(key_path_with_lower_value)
+        
+        current_node = path[key_path_with_lower_value][-1]
+        print('\nnode being explored = ', current_node)
 
-        # The code block below retrieves the current node's neighbors and updates their distances
-        hijos = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == nodo_actual]
+        if current_node == goal:
+            # returns the path along with its transition cost
+            return (path[key_path_with_lower_value], key_path_with_lower_value)
 
-        hijos_con_h = []
+        # search for the childs of the current node
+        childs = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == current_node]
+        print('\nchilds = ', childs)
 
-        for hijo in hijos[0]:
-            print(hijo)
-            valor_h = h_sld[hijo[0]]
-            hijos_con_h.append((hijo[0], valor_h))
+        # these childs have the cost of the action, we need to find its heuristic value
+        if len(childs) != 0:
+            childs_with_h_values = []
 
-        valor_minimo = min(hijos_con_h)
+            for child in childs[0]:
+                print('\nchild being processed ', child)
+                child_name = child[0]
+                # get the transition cost to the node
+                child_action_value = child[1]
+                # get the heuristic cost of the node
+                child_heuristic_value = h_sld[child_name]
+                print('\nchild = {}, action = {}, heuristic = {}'.format(child_name,child_action_value,child_heuristic_value))
+                
+                # check for the previous cities to update the transition cost
+                acucumulative_transition_cost = 0
+                current_path = path[key_path_with_lower_value]
+                for node_index in range(len(path[key_path_with_lower_value])-1):
+                    for transition_cost in tree[1]:
+                        if transition_cost[0] == current_path[node_index]:
+                            for node in transition_cost[1]:
+                                # get the node to transition to
+                                if node[0] == current_path[node_index+1]:
+                                    acucumulative_transition_cost += node[1]
 
-        path.append(valor_minimo[0])
+                acucumulative_transition_cost += child_action_value
+                print('acucumulative_transition_cost ', acucumulative_transition_cost)
 
-        if path[-1] == goal:
-            return path
-  
+                # calculate the transition cost of the current node to the current child via
+                #   f(n) = g(n) + h(n)
+                total_transition_cost = acucumulative_transition_cost + child_heuristic_value
+                print('total_transition_cost ', total_transition_cost)
 
-def A_estrella_search(tree,start_node,goal):
-    path = [start_node]
+                # save the path with the corresponding transition cost
+                childs_with_h_values.append((child_name,total_transition_cost))
 
-    if start_node== goal:
-        return path
+            print('\nchilds with h values = ', childs_with_h_values)
+            sorted_childs_with_h_values = sorted(childs_with_h_values, key=lambda x: x[1])
+            print('\nchilds with h values sorted = ', sorted_childs_with_h_values)
+
+            # update the paths expanded so far; in this way, we save the alternative paths
+            for child in sorted_childs_with_h_values:
+                temp_updated_path = path[key_path_with_lower_value].copy()
+                temp_updated_path.append(child[0])
+                # stores the new paths in the path dictionary
+                path[child[1]] = temp_updated_path
+
+            # delete the current path (old)
+            del path[key_path_with_lower_value]
+
+            print('\navailable paths = ', path)
+        else:
+            # After visiting its neighbors, we mark the node as "visited"
+            return 'Unable to find a path'
+        
+        iteration_counter += 1
+
+# encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
+# el algoritmo de wieghted A* Search:
+# entrada:
+#   start: nombre de la ciudad de inicio
+#   goal: nombre de la ciudad meta
+#   tree: tupla que contiene las aristas y sus pesos
+#   h_sld: es un diccionario[string][int] que contiene la hueristica de
+#       la distancia de la linea recta, hasta la ciudad meta
+# salida:
+#   path: es el camino encontrado con el menor peso a partir de la hueristica
+#   cost: es el costo del camino según la euristica y el costo de transisión entre nodos     
+def a_estrella_ponderada(tree,start,goal, h_sld):
+    
+    if start == goal:
+        # returns the path along with its transition cost
+        return ([start],0)
+    
+    iteration_counter = 0
+    print('\n--- search iteration {} ---'.format(iteration_counter))
+    
+    # here we will store all the paths availables as we process them
+    #   to store the first path, we need to obtain its heuristic value
+    path = {((1.3)* h_sld[start]): [start]}
+    print('path initialised = ', path)
+
+    # update the iteration number
+    iteration_counter += 1
 
     while True:
-        nodo_actual = path[-1]
+        print('\n--- search iteration {} ---'.format(iteration_counter))
+        
+        # select the path with the lowest cost
+        key_path_with_lower_value = min([int(key) for key, values in path.items()])
+        print(key_path_with_lower_value)
+        
+        current_node = path[key_path_with_lower_value][-1]
+        print('\nnode being explored = ', current_node)
 
-        # The code block below retrieves the current node's neighbors and updates their distances
-        hijos = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == nodo_actual]
+        if current_node == goal:
+            # returns the path along with its transition cost
+            return (path[key_path_with_lower_value], key_path_with_lower_value)
 
-        hijos_con_h = []
+        # search for the childs of the current node
+        childs = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == current_node]
+        print('\nchilds = ', childs)
 
-        for hijo in hijos[0]:
-            valor_h = (h_sld[hijo[0]]) + (hijo[1])
-            hijos_con_h.append((hijo[0], valor_h))
+        # these childs have the cost of the action, we need to find its heuristic value
+        if len(childs) != 0:
+            childs_with_h_values = []
 
-        valor_minimo = min(hijos_con_h)
+            for child in childs[0]:
+                print('\nchild being processed ', child)
+                child_name = child[0]
+                # get the transition cost to the node
+                child_action_value = child[1]
+                # get the heuristic cost of the node
+                child_heuristic_value_with_detour_index = ((1.3) * h_sld[child_name])
+                print('\nchild = {}, action = {}, heuristic = {}'.format(child_name,child_action_value,child_heuristic_value_with_detour_index))
+                
+                # check for the previous cities to update the transition cost
+                acucumulative_transition_cost = 0
+                current_path = path[key_path_with_lower_value]
+                for node_index in range(len(path[key_path_with_lower_value])-1):
+                    for transition_cost in tree[1]:
+                        if transition_cost[0] == current_path[node_index]:
+                            for node in transition_cost[1]:
+                                # get the node to transition to
+                                if node[0] == current_path[node_index+1]:
+                                    acucumulative_transition_cost += node[1]
 
-        path.append(valor_minimo[0])
+                acucumulative_transition_cost += child_action_value
+                print('acucumulative_transition_cost ', acucumulative_transition_cost)
 
-        if path[-1] == goal:
-            return path
-          
-def A_estrella_ponderada_search(tree,start_node,goal):
-    path = [start_node]
+                # calculate the transition cost of the current node to the current child via
+                #   f(n) = g(n) + h(n)
+                total_transition_cost = acucumulative_transition_cost + child_heuristic_value_with_detour_index
+                print('total_transition_cost ', total_transition_cost)
 
-    if start_node== goal:
-        return path
+                # save the path with the corresponding transition cost
+                childs_with_h_values.append((child_name,total_transition_cost))
 
+            print('\nchilds with h values = ', childs_with_h_values)
+            sorted_childs_with_h_values = sorted(childs_with_h_values, key=lambda x: x[1])
+            print('\nchilds with h values sorted = ', sorted_childs_with_h_values)
+
+            # update the paths expanded so far; in this way, we save the alternative paths
+            for child in sorted_childs_with_h_values:
+                temp_updated_path = path[key_path_with_lower_value].copy()
+                temp_updated_path.append(child[0])
+                # stores the new paths in the path dictionary
+                path[child[1]] = temp_updated_path
+
+            # delete the current path (old)
+            del path[key_path_with_lower_value]
+
+            print('\navailable paths = ', path)
+        else:
+            # After visiting its neighbors, we mark the node as "visited"
+            return 'Unable to find a path'
+        iteration_counter += 1
+
+# esqueleto de beam search, falta hacer que embone pero me dicen que opinas
+# function beamSearch(problem, n):# initialize an empty queue
+# startState = problem.getStartState()  
+# queue.append([startState])   
+# while queue:    
+#     paths = []  
+#     for path in queue: 
+#         state = path[-1]   
+#         if problem.isGoalState(state):   
+#             return path    
+#         successors = problem.getSuccessors(state)  
+#         for successor in successors:  
+#              newPath = path[:]  th
+#             newPath.append(successor)   
+#             paths.append(newPath)   
+#     if not paths:  
+#         return None
+#   
+#     queue = sorted(paths, key=lambda x: problem.heuristic(x[-1][0], problem))[:n]  
+# return None  
+
+# encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
+# el algoritmo de Steepest Hill Climb:
+# entrada:
+#   start: nombre de la ciudad de inicio
+#   goal: nombre de la ciudad meta
+#   tree: tupla que contiene las aristas y sus pesos
+# salida:
+#   path: es el camino encontrado con el menor peso a partir de la hueristica
+#   cost: es el costo del camino según la euristica y el costo de transisión entre nodos
+def Steepest_Hill_Climb(tree, start, goal):
+    path = [start]
+    cost = 0
+    if start == goal:
+        return (path, start)
+    
     while True:
-        nodo_actual = path[-1]
+        current_node = path[-1]
+        current_distance = haversine_hueristic(current_node, goal)
+        neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+        neighbors_and_heuristic = []
 
-        # The code block below retrieves the current node's neighbors and updates their distances
-        hijos = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == nodo_actual]
+        for neighbor in neighbors:
+            distance = haversine_hueristic(neighbor, goal)
+            neighbors_and_heuristic.append[(neighbor, distance)]
+        
+        sorted_neighbors_and_hueristic = sorted(neighbors_and_heuristic, key = lambda x: x[1])
+        next_node = sorted_neighbors_and_hueristic[0]
+        
+        if next_node[0] > current_distance:
+            if path[-1] == goal:
+                return (path, cost)
+            else:
+                return 'Unable to find a path' 
+        
+        path.append(next_node[1])
+        
+        for node_weights in tree[1]:
+            if current_node != node_weights[0]:
+                continue
+            
+            for weight in node_weights[1]:
+                if current_node != weight[0]:
+                    continue
+                cost += weight[1]
+                break
+            break
 
-        hijos_con_h = []
+def main():
+    pass
 
-        for hijo in hijos[0]:
-            valor_h = (1.3 * (h_sld[hijo[0]])) + (hijo[1])
-            hijos_con_h.append((hijo[0], valor_h))
-
-        valor_minimo = min(hijos_con_h)
-        #hijos_con_h_ordenada = hijos_con_h.sort(key=lambda x:x[1])
-
-        path.append(valor_minimo[0])
-
-        if path[-1] == goal:
-            return path
-
-       #esqueleto de beam search, falta hacer que embone pero me dicen que opinas
-   # function beamSearch(problem, n):# initialize an empty queue
-   # startState = problem.getStartState()  
-  #  queue.append([startState])   
-   # while queue:    
-   #     paths = []  
-   #     for path in queue: 
-   #         state = path[-1]   
-   #         if problem.isGoalState(state):   
-   #             return path    
-   #         successors = problem.getSuccessors(state)  
-   #         for successor in successors:  
-  #              newPath = path[:]  th
-   #             newPath.append(successor)   
-   #             paths.append(newPath)   
-   #     if not paths:  
-   #         return None
-    #   
-   #     queue = sorted(paths, key=lambda x: problem.heuristic(x[-1][0], problem))[:n]  
-   # return None  
+if __name__ == "__main__":
+    main()
