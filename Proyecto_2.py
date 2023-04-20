@@ -681,36 +681,39 @@ def a_estrella_ponderada(tree,start,goal, h_sld):
             return 'Unable to find a path'
         iteration_counter += 1
 
-# esqueleto de beam search, falta hacer que embone pero me dicen que opinas
-# function beamSearch(problem, n):# initialize an empty queue
-# startState = problem.getStartState()  
-# queue.append([startState])   
-# while queue:    
-#     paths = []  
-#     for path in queue: 
-#         state = path[-1]   
-#         if problem.isGoalState(state):   
-#             return path    
-#         successors = problem.getSuccessors(state)  
-#         for successor in successors:  
-#              newPath = path[:]  th
-#             newPath.append(successor)   
-#             paths.append(newPath)   
-#     if not paths:  
-#         return None
-#   
-#     queue = sorted(paths, key=lambda x: problem.heuristic(x[-1][0], problem))[:n]  
-# return None  
+def beam_search(tree, start_node, goal, n):
+    # Initialize an empty queue and the start state.
+    queue = []
+    queue.append([start_node])
+    
+    # Loop while the queue is not empty.
+    while queue:
+        # Generate all possible successor states of the current states and add them to a list of paths.
+        paths = []
+        for path in queue:
+            current_node = path[-1]
+            children = [edge[1] for edge in tree if edge[0] == current_node]
+            for child in children:
+                extended_path = path.copy()
+                extended_path.append(child)
+                paths.append(extended_path)  
+            queue.remove(path)
+        
+        # Check if any of the successor states is a goal state.
+        for path in paths:
+            node = path[-1]
+            if node == goal:
+                return path
+        
+        # If there are no goal states in the current paths, select the n best paths based on their heuristic value.
+        queue = sorted(paths, key=lambda x: haversine_heuristic(x[-1], goal))[:n]
+        
+        # If there are no more paths to explore, return None to indicate failure.
+        if not queue:
+            return print("No hubo un camino con un factor beam de " + n )
+        
+    return None
 
-# encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
-# el algoritmo de Steepest Hill Climb:
-# entrada:
-#   start: nombre de la ciudad de inicio
-#   goal: nombre de la ciudad meta
-#   tree: tupla que contiene las aristas y sus pesos
-# salida:
-#   path: es el camino encontrado con el menor peso a partir de la hueristica
-#   cost: es el costo del camino según la euristica y el costo de transisión entre nodos
 def Steepest_Hill_Climb(tree, start, goal):
     path = [start]
     cost = 0
