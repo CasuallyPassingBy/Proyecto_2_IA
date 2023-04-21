@@ -312,7 +312,6 @@ cities_coordinates = {
 #   goal = tupla que contiene la latitud y longitud de la ciudad destino
 # salida:
 #   regresa el valor numerico de la distancia haversine redondeado
-
 def haversine_distance_between_cities(origin,goal):
     constante_R = 6371
     lat1 = origin[0]*((math.pi)/180)
@@ -331,7 +330,7 @@ def haversine_distance_between_cities(origin,goal):
 #   goal = nombre de la ciudad meta
 # salida:
 #   regresa el valor númerico de la distancia haversine redondeado
-def haversine_hueristic(origin, goal):
+def haversine_heuristic(origin, goal):
     origin_coordinates = cities_coordinates[origin]
     goal_coordinates = cities_coordinates[goal]
     return haversine_distance_between_cities(origin_coordinates, goal_coordinates)
@@ -362,7 +361,7 @@ def calcular_heuristica_distancia_de_linea_recta(goal):
     
     # regresa el diccionario con los valores de la heuristica para la ciudad objetivo correspondiente
     return heuristic_linear_straight_distance
-  
+
 def generate_states(graph, available_nodes_names):
     nodes_tuples = []
     nodes_connection_weights = []
@@ -418,10 +417,9 @@ def generate_unidirectional_weights(tree):
 #   start: nombre de la ciudad de inicio
 #   goal: nombre de la ciudad meta
 #   tree: tupla que contiene las aristas y sus pesos
-#   h_sld: es un diccionario[string][int] que contiene la hueristica de
-#       la distancia de la linea recta, hasta la ciudad meta
+#   huerisic: una función que toma dos nodos y estima la distancia entre ellos
 # salida:
-#   path: es el camino encontrado con el menor peso a partir de la hueristica
+#   path: es el camino encontrado con el menor peso a partir de la heuristica
 def greedy(tree, start, goal, h_sld):
     if start == goal:
         # returns the path along with its transition cost
@@ -429,7 +427,7 @@ def greedy(tree, start, goal, h_sld):
     
     # here we will store all the paths availables as we process them
     # to store the first path, we need to obtain its heuristic value
-    path = {h_sld[start]: [start]}
+    path = {h_sld[start] : [start]}
 
     # update the iteration number
     iteration_counter = 1
@@ -483,10 +481,10 @@ def greedy(tree, start, goal, h_sld):
 #   start: nombre de la ciudad de inicio
 #   goal: nombre de la ciudad meta
 #   tree: tupla que contiene las aristas y sus pesos
-#   h_sld: es un diccionario[string][int] que contiene la hueristica de
+#   h_sld: es un diccionario[string][int] que contiene la heuristica de
 #       la distancia de la linea recta, hasta la ciudad meta
 # salida:
-#   path: es el camino encontrado con el menor peso a partir de la hueristica
+#   path: es el camino encontrado con el menor peso a partir de la heuristica
 #   cost: es el costo del camino según la euristica y el costo de transisión entre nodos
 def a_estrella(tree,start,goal, h_sld):
     
@@ -585,10 +583,10 @@ def a_estrella(tree,start,goal, h_sld):
 #   start: nombre de la ciudad de inicio
 #   goal: nombre de la ciudad meta
 #   tree: tupla que contiene las aristas y sus pesos
-#   h_sld: es un diccionario[string][int] que contiene la hueristica de
+#   h_sld: es un diccionario[string][int] que contiene la heuristica de
 #       la distancia de la linea recta, hasta la ciudad meta
 # salida:
-#   path: es el camino encontrado con el menor peso a partir de la hueristica
+#   path: es el camino encontrado con el menor peso a partir de la heuristica
 #   cost: es el costo del camino según la euristica y el costo de transisión entre nodos     
 def a_estrella_ponderada(tree,start,goal, h_sld):
     
@@ -705,7 +703,7 @@ def beam_search(tree, start_node, goal, n):
                 return path
         
         # If there are no goal states in the current paths, select the n best paths based on their heuristic value.
-        queue = sorted(paths, key=lambda x: haversine_hueristic(x[-1], goal))[:n]
+        queue = sorted(paths, key=lambda x: haversine_heuristic(x[-1], goal))[:n]
         
         # If there are no more paths to explore, return None to indicate failure.
         if not queue:
@@ -713,48 +711,40 @@ def beam_search(tree, start_node, goal, n):
         
     return None
 
-def Steepest_Hill_Climb(tree, start, goal):
+def Steepest_Hill_Climb(tree, start, goal, heuristic = haversine_heuristic):
     path = [start]
-    cost = 0
     if start == goal:
-        return (path, start)
+        return path
     
     while True:
         current_node = path[-1]
-        current_distance = haversine_hueristic(current_node, goal)
-        neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        next_node = sorted(neighbors, key = lambda x: haversine_hueristic(x, goal))[0]
+        current_distance = heuristic(current_node, goal)
         
-        if haversine_hueristic(next_node) > current_distance:
+        neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+        
+        for neighbor in neighbors:
+            if heuristic(neighbor, goal) < current_distance:
+                next_node = neighbor
+                path.append(next_node)
+                break
+        else:
             if path[-1] == goal:
-                return (path, cost)
+                return path
             else:
                 return 'Unable to find a path' 
         
-        path.append(next_node[1])
-        
-        for node_weights in tree[1]:
-            if current_node != node_weights[0]:
-                continue
-            
-            for weight in node_weights[1]:
-                if current_node != weight[0]:
-                    continue
-                cost += weight[1]
-                break
-            break
-
-def Stochastic_Hill_Climb(tree, start, goal):
+def Stochastic_Hill_Climb(tree, start, goal, heuristic = haversine_heuristic):
     path = [start]
     cost = 0
     if start == goal:
-        return (path, start)
+        return (path, cost)
     
     while True:
         current_node = path[-1]
-        current_distance = haversine_hueristic(current_node, goal)
+        current_distance = heuristic(current_node, goal)
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        filtered_neighbors = filter(lambda x: haversine_hueristic(x, goal) < current_distance, neighbors)
+
+        filtered_neighbors = filter(lambda x: heuristic(x, goal) < current_distance, neighbors)
         if filtered_neighbors != []:
             random_index = random.randint(0, len(filtered_neighbors) - 1)
             next_node = filtered_neighbors[random_index]
@@ -781,7 +771,6 @@ def generate_initial_solution(tree, start):
 
 def simmulated_annealing(solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir):
     pass
-
 
 def submenu_1(tree, start, opcion):
     goal = validate_in("Ingrese la ciudad meta: ")
@@ -833,7 +822,6 @@ def validate_int(command) -> int:
             print("Ingrese un número")
     return numero_ingresado
 
-
 def menu():
 
     ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
@@ -877,9 +865,8 @@ def menu():
 
     return switch[opcion]
     
-menu()
-
 def main():
+    menu()
     pass
 
 if __name__ == "__main__":
