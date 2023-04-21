@@ -214,7 +214,7 @@ names_formed_graph = [
 ###############################
 ##### Dependencias #####
 import math 
-
+import random
 ###############################
 ###############################
 ##### Variables Globales #####
@@ -723,22 +723,47 @@ def Steepest_Hill_Climb(tree, start, goal):
         current_node = path[-1]
         current_distance = haversine_hueristic(current_node, goal)
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        neighbors_and_heuristic = []
-
-        for neighbor in neighbors:
-            distance = haversine_hueristic(neighbor, goal)
-            neighbors_and_heuristic.append[(neighbor, distance)]
+        next_node = sorted(neighbors, key = lambda x: haversine_hueristic(x, goal))[0]
         
-        sorted_neighbors_and_hueristic = sorted(neighbors_and_heuristic, key = lambda x: x[1])
-        next_node = sorted_neighbors_and_hueristic[0]
-        
-        if next_node[0] > current_distance:
+        if haversine_hueristic(next_node) > current_distance:
             if path[-1] == goal:
                 return (path, cost)
             else:
                 return 'Unable to find a path' 
         
         path.append(next_node[1])
+        
+        for node_weights in tree[1]:
+            if current_node != node_weights[0]:
+                continue
+            
+            for weight in node_weights[1]:
+                if current_node != weight[0]:
+                    continue
+                cost += weight[1]
+                break
+            break
+
+def Stochastic_Hill_Climb(tree, start, goal):
+    path = [start]
+    cost = 0
+    if start == goal:
+        return (path, start)
+    
+    while True:
+        current_node = path[-1]
+        current_distance = haversine_hueristic(current_node, goal)
+        neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+        filtered_neighbors = filter(lambda x: haversine_hueristic(x, goal) < current_distance, neighbors)
+        if filtered_neighbors != []:
+            random_index = random.randint(0, len(filtered_neighbors) - 1)
+            next_node = filtered_neighbors[random_index]
+            path.append(next_node)
+        else:
+            if current_node == goal:
+                return (path, cost)
+            else:
+                return "No se pudo encontrar un camino"
         
         for node_weights in tree[1]:
             if current_node != node_weights[0]:
