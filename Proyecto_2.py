@@ -678,7 +678,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld):
             return 'Unable to find a path'
         iteration_counter += 1
 
-def beam_search(tree, start_node, goal, n):
+def beam_search(tree, start_node, goal, numero_de_nodos_para_elegir):
     # Initialize an empty queue and the start state.
     queue = []
     queue.append([start_node])
@@ -703,11 +703,11 @@ def beam_search(tree, start_node, goal, n):
                 return path
         
         # If there are no goal states in the current paths, select the n best paths based on their heuristic value.
-        queue = sorted(paths, key=lambda x: haversine_heuristic(x[-1], goal))[:n]
+        queue = sorted(paths, key=lambda x: haversine_heuristic(x[-1], goal))[:numero_de_nodos_para_elegir]
         
         # If there are no more paths to explore, return None to indicate failure.
         if not queue:
-            return print("No hubo un camino con un factor beam de " + n )
+            return print("No hubo un camino con un factor beam de " + numero_de_nodos_para_elegir)
         
     return None
 
@@ -780,17 +780,20 @@ def submenu_1(tree, start, opcion):
         return greedy(tree, start, goal, heuristica)
     elif opcion == 2:
         return a_estrella(tree,start,goal,heuristica)
-    else:
+    elif opcion == 3:
         return a_estrella_ponderada(tree,start,goal,heuristica)
+    elif opcion == 5:
+        return Steepest_Hill_Climb(tree, start, goal, heuristica)
+    else:
+        return Stochastic_Hill_Climb(tree, strat, goal, heuristica)
+    
 
 def submenu_2(tree, start):
     goal = validate_in("Ingrese la ciudad meta: ")
     numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
+    return beam_search(tree, start, goal, numero_de_nodos_para_elegir)
 
 def submenu_3(tree, start):
-    pass
-
-def submenu_4(tree, start):
     pass
 
 def submenu_5(tree, start):
@@ -858,9 +861,9 @@ def menu():
         2: submenu_1(tree, ciudad_origen, opcion),
         3: submenu_1(tree, ciudad_origen, opcion),
         4: submenu_2(tree, ciudad_origen),
-        5: submenu_3(tree, ciudad_origen),
-        6: submenu_4(tree, ciudad_origen),
-        7: submenu_5(tree, ciudad_origen)
+        5: submenu_1(tree, ciudad_origen, opcion),
+        6: submenu_1(tree, ciudad_origen, opcion),
+        7: submenu_3(tree, ciudad_origen)
     }
 
     return switch[opcion]
