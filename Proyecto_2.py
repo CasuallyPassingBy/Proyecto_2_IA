@@ -30,7 +30,58 @@
         particulares de cada algoritmo. Muestra el tiempo de ejecución de cada algoritmo y muestra error si es que aparece uno.
 '''
 
+###############################
+###############################
+##### Dependencias #####
+import math 
+import random
+# Aqui segun yo va la libreria de TIEMPO, cuando la pongamos 
 
+###############################
+###############################
+#####  #####
+"""
+VARIABLES GLOBALES
+cities_coordinates: diccionario con el nombre de las ciudades contenidas en el grafo y sus correspondientes coordenadas
+                    geograficas en formato de latitud y longitud.
+formed_graph:       Matriz a partir de la cual se forman las tuplas que usan todos los algoritmos menos el simulated annealing.                  
+names_formed_graph: Lista con los nombres que utiliza el metodo generate_states para formar las tuplas que usan todos los algoritmos menos
+                    el simulated annealing.
+formed_graph_unidireccional_pesos_heuristica:    Matriz a partir de la cual se forman las tuplas que usa el algoritmo simulated annealing.
+names_unidireccional:   Lista de nombres que utiliza el algoritmo simulated annealing para formar las tuplas.
+
+A continuación se muestra una lisa con las funciones de apoyo y con las funciones principales. Se incluye una breve descripción, mas adelante
+se explicaran con más detalle.
+
+FUNCIONES O CLASES DE APOYO:
+    - haversine_distance_between_cities: 
+    - calcular_heuristica_distancia_de_linea_recta
+    - submenu_1
+    - submenu_2
+    - submenu_3
+    - submenu_4
+    - submenu_5
+    - validate_in
+    - validate_int
+
+FUNCIONES O CLASES PRINCIPALES:
+    - haversine_hueristic
+    - generate_states
+    - generate_unidirectional_weights
+    - greedy
+    - a_estrella
+    - a_estrella_ponderada
+    - beam_search
+    - Steepest_Hill_Climb
+    - Stochastic_Hill_Climb
+    - simmulated_annealing
+    - menu
+    
+"""
+
+
+
+#Matriz que es utilizada para desarrolar el algoritmo de simmulated annealing, ya que esta pide un grafo unidireccional.
 formed_graph_unidireccional_pesos_heuristica = [
     [0, 143, 209, 407, 289, 590, 325, 725, 820, 494, 910, 1029, 961, 1128, 1178, 1244, 1140, 1294, 1317, 1207, 1448, 1349, 1359, 1472, 1079, 1381, 1217, 1244, 1410, 1345, 1583, 994, 1089, 1359, 1487, 1462, 1654, 1145, 1495, 1504, 1713, 1599, 1629, 1854, 1770, 1847, 1293, 1863, 2023, 2028, 1197, 1207, 1468, 2115, 2312, 2144, 1287, 1613, 2277, 2383, 2447, 1759, 1990, 1472, 2522, 2544, 1613, 2635, 2581, 3098, 3236, 2990, 3180, 3079, 2658, 2601, 2427, 2380], 
     [143, 0, 125, 264, 157, 449, 241, 583, 683, 357, 767, 888, 818, 985, 1037, 1102, 997, 1151, 1176, 1066, 1305, 1209, 1217, 1331, 937, 1238, 1077, 1107, 1275, 1206, 1441, 852, 956, 1222, 1352, 1335, 1513, 1021, 1362, 1366, 1579, 1471, 1505, 1735, 1632, 1709, 1178, 1733, 1919, 1904, 1084, 1115, 1365, 2019, 2198, 2027, 1193, 1516, 2196, 2295, 2340, 1649, 1903, 1385, 2434, 2438, 1532, 2540, 2480, 3007, 3143, 2894, 3085, 2980, 2548, 2484, 2306, 2255], 
@@ -112,6 +163,7 @@ formed_graph_unidireccional_pesos_heuristica = [
     [2380, 2255, 2296, 2033, 2098, 1936, 2297, 1848, 1879, 2044, 1658, 1701, 1542, 1520, 1624, 1282, 1391, 1435, 1189, 1286, 1245, 1130, 1193, 1088, 1419, 1238, 1254, 1192, 1010, 1139, 1052, 1484, 1310, 1097, 938, 921, 961, 1235, 913, 966, 719, 788, 751, 548, 760, 709, 1104, 541, 613, 356, 1202, 1294, 1011, 743, 314, 328, 1223, 962, 1029, 905, 510, 720, 922, 1150, 936, 569, 1137, 858, 697, 1211, 1277, 1025, 1196, 1041, 547, 343, 142, 0]
 ]
 
+#Lista de nombres para el desarrollo del algorimo de simmulated annealing.
 names_unidireccional = [
     'CANCUN', 'VALLADOLID', 'FELIPE CARRILLO PUERTO', 'CAMPECHE', 'MERIDA','CIUDAD DEL CARMEN', 'CHETUMAL', 'VILLAHERMOSA', 'TUXTLA', 'FRANCISCO ESCARCEGA', 'ACAYUCAN', 'TEHUANTEPEC', 'ALVARADO', 'OAXACA', 'PUERTO ANGEL', 'IZUCAR DE MATAMOROS', 'TEHUACAN',
     'PINOTEPA NACIONAL', 'CUERNAVACA', 'PUEBLA', 'ACAPULCO', 'CIUDAD DE MEXICO', 'IGUALA', 'CIUDAD ALTAMIRANO', 'CORDOBA', 'CHILPANCINGO', 'TLAXCALA', 'PACHUCA DE SOTO', 'QUERETARO', 'TOLUCA DE LERDO', 'ZIHUATANEJO', 'VERACRUZ', 'TUXPAN DE RODRIGUEZ CANO',
@@ -120,6 +172,7 @@ names_unidireccional = [
     'TIJUANA', 'SAN FELIPE', 'ENSENADA', 'SAN QUINTIN', 'SANTA ROSALIA', 'SANTO DOMINGO', 'LA PAZ', 'CABO SAN LUCAS'
 ]
 
+#Matriz que usan el resto de los algoritmos en su desarrollo para realizar su busqueda. 
 formed_graph = [
     [0,90,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#cancun
     [0,0,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],#valladolid
@@ -201,6 +254,7 @@ formed_graph = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]#Tlaxcala
 ]
 
+#Lista de nombres para el algorimo de #, 
 names_formed_graph = [
     'CANCUN','VALLADOLID','FELIPE CARRILLO PUENTE','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLA HERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
     'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOVA','VERACRUZ','CUERNAVACA','CIUDAD DE MÉXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
@@ -210,17 +264,6 @@ names_formed_graph = [
 ]
 
 
-###############################
-###############################
-##### Dependencias #####
-import math 
-import random
-###############################
-###############################
-##### Variables Globales #####
-
-# diccionario con el nombre de las ciudades contenidas en el grafo y sus correspondientes coordenadas
-#   geograficas en formato de latitud y longitud
 cities_coordinates = {
     'CANCUN': (21.1213285,-86.9192738)
     ,'VALLADOLID': (20.688114,-88.2204456)
@@ -302,9 +345,7 @@ cities_coordinates = {
     ,'CABO SAN LUCAS': (22.8962253,-109.9505077)
 }
 
-###############################
-###############################
-##### Funciones o Clases de Apoyo #####
+
 
 # calcula la distancia haversine entre dos ciudades por medio de las coordenas geograficas
 # entrada:
@@ -312,6 +353,7 @@ cities_coordinates = {
 #   goal = tupla que contiene la latitud y longitud de la ciudad destino
 # salida:
 #   regresa el valor numerico de la distancia haversine redondeado
+
 def haversine_distance_between_cities(origin,goal):
     constante_R = 6371
     lat1 = origin[0]*((math.pi)/180)
@@ -330,13 +372,11 @@ def haversine_distance_between_cities(origin,goal):
 #   goal = nombre de la ciudad meta
 # salida:
 #   regresa el valor númerico de la distancia haversine redondeado
-def haversine_heuristic(origin, goal):
+def haversine_hueristic(origin, goal):
     origin_coordinates = cities_coordinates[origin]
     goal_coordinates = cities_coordinates[goal]
     return haversine_distance_between_cities(origin_coordinates, goal_coordinates)
-###############################
-###############################
-##### Funciones o Clases Principales #####
+
 
 # calcula la heuristica para una ciudad objetivo
 # entrada:
@@ -361,7 +401,7 @@ def calcular_heuristica_distancia_de_linea_recta(goal):
     
     # regresa el diccionario con los valores de la heuristica para la ciudad objetivo correspondiente
     return heuristic_linear_straight_distance
-
+  
 def generate_states(graph, available_nodes_names):
     nodes_tuples = []
     nodes_connection_weights = []
@@ -411,15 +451,17 @@ def generate_unidirectional_weights(tree):
         
         unidirectional_weights.append[(weight[0], current_connections)]
 
+        
 # encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
 # el algoritmo de Greedy-Best First Search:
 # entrada:
 #   start: nombre de la ciudad de inicio
 #   goal: nombre de la ciudad meta
 #   tree: tupla que contiene las aristas y sus pesos
-#   huerisic: una función que toma dos nodos y estima la distancia entre ellos
+#   h_sld: es un diccionario[string][int] que contiene la hueristica de
+#       la distancia de la linea recta, hasta la ciudad meta
 # salida:
-#   path: es el camino encontrado con el menor peso a partir de la heuristica
+#   path: es el camino encontrado con el menor peso a partir de la hueristica
 def greedy(tree, start, goal, h_sld):
     if start == goal:
         # returns the path along with its transition cost
@@ -427,7 +469,7 @@ def greedy(tree, start, goal, h_sld):
     
     # here we will store all the paths availables as we process them
     # to store the first path, we need to obtain its heuristic value
-    path = {h_sld[start] : [start]}
+    path = {h_sld[start]: [start]}
 
     # update the iteration number
     iteration_counter = 1
@@ -481,10 +523,10 @@ def greedy(tree, start, goal, h_sld):
 #   start: nombre de la ciudad de inicio
 #   goal: nombre de la ciudad meta
 #   tree: tupla que contiene las aristas y sus pesos
-#   h_sld: es un diccionario[string][int] que contiene la heuristica de
+#   h_sld: es un diccionario[string][int] que contiene la hueristica de
 #       la distancia de la linea recta, hasta la ciudad meta
 # salida:
-#   path: es el camino encontrado con el menor peso a partir de la heuristica
+#   path: es el camino encontrado con el menor peso a partir de la hueristica
 #   cost: es el costo del camino según la euristica y el costo de transisión entre nodos
 def a_estrella(tree,start,goal, h_sld):
     
@@ -583,10 +625,10 @@ def a_estrella(tree,start,goal, h_sld):
 #   start: nombre de la ciudad de inicio
 #   goal: nombre de la ciudad meta
 #   tree: tupla que contiene las aristas y sus pesos
-#   h_sld: es un diccionario[string][int] que contiene la heuristica de
+#   h_sld: es un diccionario[string][int] que contiene la hueristica de
 #       la distancia de la linea recta, hasta la ciudad meta
 # salida:
-#   path: es el camino encontrado con el menor peso a partir de la heuristica
+#   path: es el camino encontrado con el menor peso a partir de la hueristica
 #   cost: es el costo del camino según la euristica y el costo de transisión entre nodos     
 def a_estrella_ponderada(tree,start,goal, h_sld):
     
@@ -703,7 +745,7 @@ def beam_search(tree, start_node, goal, n):
                 return path
         
         # If there are no goal states in the current paths, select the n best paths based on their heuristic value.
-        queue = sorted(paths, key=lambda x: haversine_heuristic(x[-1], goal))[:n]
+        queue = sorted(paths, key=lambda x: haversine_hueristic(x[-1], goal))[:n]
         
         # If there are no more paths to explore, return None to indicate failure.
         if not queue:
@@ -711,40 +753,48 @@ def beam_search(tree, start_node, goal, n):
         
     return None
 
-def Steepest_Hill_Climb(tree, start, goal, heuristic = haversine_heuristic):
-    path = [start]
-    if start == goal:
-        return path
-    
-    while True:
-        current_node = path[-1]
-        current_distance = heuristic(current_node, goal)
-        
-        neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        
-        for neighbor in neighbors:
-            if heuristic(neighbor, goal) < current_distance:
-                next_node = neighbor
-                path.append(next_node)
-                break
-        else:
-            if path[-1] == goal:
-                return path
-            else:
-                return 'Unable to find a path' 
-        
-def Stochastic_Hill_Climb(tree, start, goal, heuristic = haversine_heuristic):
+def Steepest_Hill_Climb(tree, start, goal):
     path = [start]
     cost = 0
     if start == goal:
-        return (path, cost)
+        return (path, start)
     
     while True:
         current_node = path[-1]
-        current_distance = heuristic(current_node, goal)
+        current_distance = haversine_hueristic(current_node, goal)
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+        next_node = sorted(neighbors, key = lambda x: haversine_hueristic(x, goal))[0]
+        
+        if haversine_hueristic(next_node) > current_distance:
+            if path[-1] == goal:
+                return (path, cost)
+            else:
+                return 'Unable to find a path' 
+        
+        path.append(next_node[1])
+        
+        for node_weights in tree[1]:
+            if current_node != node_weights[0]:
+                continue
+            
+            for weight in node_weights[1]:
+                if current_node != weight[0]:
+                    continue
+                cost += weight[1]
+                break
+            break
 
-        filtered_neighbors = filter(lambda x: heuristic(x, goal) < current_distance, neighbors)
+def Stochastic_Hill_Climb(tree, start, goal):
+    path = [start]
+    cost = 0
+    if start == goal:
+        return (path, start)
+    
+    while True:
+        current_node = path[-1]
+        current_distance = haversine_hueristic(current_node, goal)
+        neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+        filtered_neighbors = filter(lambda x: haversine_hueristic(x, goal) < current_distance, neighbors)
         if filtered_neighbors != []:
             random_index = random.randint(0, len(filtered_neighbors) - 1)
             next_node = filtered_neighbors[random_index]
@@ -771,6 +821,7 @@ def generate_initial_solution(tree, start):
 
 def simmulated_annealing(solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir):
     pass
+
 
 def submenu_1(tree, start, opcion):
     goal = validate_in("Ingrese la ciudad meta: ")
@@ -822,6 +873,7 @@ def validate_int(command) -> int:
             print("Ingrese un número")
     return numero_ingresado
 
+
 def menu():
 
     ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
@@ -865,8 +917,9 @@ def menu():
 
     return switch[opcion]
     
+menu()
+
 def main():
-    menu()
     pass
 
 if __name__ == "__main__":
