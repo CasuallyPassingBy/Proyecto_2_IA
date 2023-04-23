@@ -372,7 +372,7 @@ def haversine_distance_between_cities(origin,goal):
 #   goal = nombre de la ciudad meta
 # salida:
 #   regresa el valor númerico de la distancia haversine redondeado
-def haversine_hueristic(origin, goal):
+def haversine_heuristic(origin, goal):
     origin_coordinates = cities_coordinates[origin]
     goal_coordinates = cities_coordinates[goal]
     return haversine_distance_between_cities(origin_coordinates, goal_coordinates)
@@ -765,8 +765,10 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
             return 'Unable to find a path'
         iteration_counter += 1
 
-def beam_search(tree, start_node, goal, n):
+def beam_search(tree, start_node, goal, numero_de_nodos_para_elegir, heuristic = haversine_heuristic, step_by_step = False):
     # Initialize an empty queue and the start state.
+    if start_node == goal:
+        return [start_node]
     queue = []
     queue.append([start_node])
     
@@ -776,12 +778,19 @@ def beam_search(tree, start_node, goal, n):
         paths = []
         for path in queue:
             current_node = path[-1]
-            children = [edge[1] for edge in tree if edge[0] == current_node]
+            children = [edge[1] for edge in tree[0] if edge[0] == current_node]
+            if step_by_step:
+                print(f"children of {current_node}: {children}")
             for child in children:
                 extended_path = path.copy()
                 extended_path.append(child)
-                paths.append(extended_path)  
+                paths.append(extended_path)
+            if step_by_step:
+                print(f"queue: {queue}")
             queue.remove(path)
+            if step_by_step:
+                print(f"queue: {queue}")
+                print(f"paths: {paths}")
         
         # Check if any of the successor states is a goal state.
         for path in paths:
@@ -790,15 +799,15 @@ def beam_search(tree, start_node, goal, n):
                 return path
         
         # If there are no goal states in the current paths, select the n best paths based on their heuristic value.
-        queue = sorted(paths, key=lambda x: haversine_hueristic(x[-1], goal))[:n]
+        queue = sorted(paths, key=lambda x: heuristic(x[-1], goal))[:numero_de_nodos_para_elegir]
         
         # If there are no more paths to explore, return None to indicate failure.
         if not queue:
-            return print("No hubo un camino con un factor beam de " + n )
+            return f"No hubo un camino con un factor beam de {numero_de_nodos_para_elegir}" 
         
     return None
 
-def Steepest(tree, start, goal, heuristic, step_by_step = False):
+def Steepest_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
     if step_by_step:
         print("--------")
     path = [start]
@@ -806,48 +815,64 @@ def Steepest(tree, start, goal, heuristic, step_by_step = False):
         return path
     
     while True:
+        # Get the last node of the path and check the heuristic on that node to the goal 
         current_node = path[-1]
         current_distance = heuristic(current_node, goal)
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+        # We sort the neighbors of the current node using the value of the heuristic and
+        # we pick the one with the lowest heuristic 
         sorted_neighbors = sorted(neighbors, key = lambda x: heuristic(x, goal))
         next_node = sorted_neighbors[0]
+
         if step_by_step: 
             print(f"next node: {next_node}")
             print(f"current distance: {current_distance}")
             print(f"heuristic: {heuristic(next_node, goal)}")
-        if heuristic(next_node, goal) <= current_distance:
+        # if the heuristic of the possible next node is less than the current one
+        # then we can add it to the path 
+        if heuristic(next_node, goal) < current_distance:
             path.append(next_node)
             if next_node == goal:
                 return path
+        # if this doesn't happen that means we've reached a local maxima/minima
+        # and we can't improve furhther using this algorithm 
         else:
             if step_by_step:
                 print([(neighbor, heuristic(neighbor, goal)) for neighbor in sorted_neighbors])
                 print(path)
             return "No se encontro camino"
 
-def Stochastic(tree, start, goal, heuristic, step_by_step = False):
+def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
     if step_by_step:
         print("------------")
+    # we initilize our path
     path = [start]
     if start == goal:
         return path
     
     while True:
+        # we pick the last node of our path and that is our current node
+        # and calculate the distance to the goal 
         current_node = path[-1]
-        
         current_distance = heuristic(current_node, goal)
+        # We get the neighbors of the current node, so that we can filter them weather or not
+        # they are closer than our current node 
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        filtered_neighbors = list(filter(lambda x: heuristic(x, goal) < current_distance, neighbors))
+        filtered_neighbors = list(filter(lambda x: heuristic(x, goal) <= current_distance, neighbors))
         if step_by_step:
             print(f"current node: {current_node}")
             print(f"neighbors: {neighbors}")
             print(f"filtered neighbors: {filtered_neighbors}")
+        # if the filtered neighbors is not empty then, we pick one of them at random
+        # and let it be our next node 
         if filtered_neighbors != []:
             random_index = random.randint(0, len(filtered_neighbors) - 1)
             next_node = filtered_neighbors[random_index]
             if step_by_step:
                 print(f"next node: {next_node}")
             path.append(next_node)
+        # In the other hand, if the list is empty we have reached a local minima/maxima
+        # and we just need to check if we have reached our goal 
         else:
             if current_node == goal:
                 return path
@@ -869,17 +894,19 @@ def submenu_1(tree, start, opcion):
         return greedy(tree, start, goal, heuristica)
     elif opcion == 2:
         return a_estrella(tree,start,goal,heuristica)
-    else:
+    elif opcion == 3:
         return a_estrella_ponderada(tree,start,goal,heuristica)
+    elif opcion == 5:
+        return Steepest_Hill_Climb(tree, start, goal)
+    else:
+        return Stochastic_Hill_Climb(tree, start, goal)
 
 def submenu_2(tree, start):
     goal = validate_in("Ingrese la ciudad meta: ")
     numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
+    return beam_search(tree, start, goal, numero_de_nodos_para_elegir)
 
 def submenu_3(tree, start):
-    pass
-
-def submenu_4(tree, start):
     pass
 
 def submenu_5(tree, start):
@@ -948,17 +975,15 @@ def menu():
         2: submenu_1(tree, ciudad_origen, opcion),
         3: submenu_1(tree, ciudad_origen, opcion),
         4: submenu_2(tree, ciudad_origen),
-        5: submenu_3(tree, ciudad_origen),
-        6: submenu_4(tree, ciudad_origen),
-        7: submenu_5(tree, ciudad_origen)
+        5: submenu_1(tree, ciudad_origen, opcion),
+        6: submenu_1(tree, ciudad_origen, opcion),
+        7: submenu_3(tree, ciudad_origen)
     }
 
     return switch[opcion]
-    
-menu()
 
 def main():
-    pass
+    menu()
 
 if __name__ == "__main__":
     main()
