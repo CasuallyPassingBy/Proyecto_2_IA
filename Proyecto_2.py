@@ -345,8 +345,6 @@ cities_coordinates = {
     ,'CABO SAN LUCAS': (22.8962253,-109.9505077)
 }
 
-
-
 # calcula la distancia haversine entre dos ciudades por medio de las coordenas geograficas
 # entrada:
 #   origin = tupla que contiene la latitud y longitud de la ciudad de origen
@@ -464,7 +462,7 @@ def generate_unidirectional_weights(tree):
 def greedy(tree, start, goal, h_sld, step_by_step = False):
     if start == goal:
         # returns the path along with its transition cost
-        return ([start],0)
+        return [start]
     iteration_counter = 0
     if step_by_step:
         print('\n--- search iteration {} ---'.format(iteration_counter))
@@ -487,7 +485,7 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
             print('\nnode being explored = ', current_node)
         if current_node == goal:
             # returns the path along with its transition cost
-            return (path[key_path_with_lower_value], key_path_with_lower_value)
+            return path[key_path_with_lower_value]
 
         # search for the childs of the current node
         childs = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == current_node]
@@ -570,13 +568,11 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
         
         # select the path with the lowest cost
         key_path_with_lower_value = min([int(key) for key, values in path.items()])
-        
-        
         current_node = path[key_path_with_lower_value][-1]
+
         if step_by_step:
             print('\n--- search iteration {} ---'.format(iteration_counter))
-        print(key_path_with_lower_value)
-        if step_by_step:
+            print(key_path_with_lower_value)
             print('\nnode being explored = ', current_node)
 
         if current_node == goal:
@@ -674,7 +670,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
     
     # here we will store all the paths availables as we process them
     #   to store the first path, we need to obtain its heuristic value
-    path = {((1.3)* h_sld[start]): [start]}
+    path = {int((1.3)* h_sld[start]): [start]}
     if step_by_step:
         print('path initialised = ', path)
 
@@ -687,9 +683,10 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
         
         # select the path with the lowest cost
         key_path_with_lower_value = min([int(key) for key, values in path.items()])
+        
         if step_by_step:
             print(key_path_with_lower_value)
-        
+        # here
         current_node = path[key_path_with_lower_value][-1]
         if step_by_step:
             print('\nnode being explored = ', current_node)
@@ -735,7 +732,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
 
                 # calculate the transition cost of the current node to the current child via
                 #   f(n) = g(n) + h(n)
-                total_transition_cost = acucumulative_transition_cost + child_heuristic_value_with_detour_index
+                total_transition_cost = int(acucumulative_transition_cost + child_heuristic_value_with_detour_index)
                 if step_by_step:
                     print('total_transition_cost ', total_transition_cost)
 
