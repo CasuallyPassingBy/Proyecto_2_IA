@@ -798,68 +798,61 @@ def beam_search(tree, start_node, goal, n):
         
     return None
 
-def Steepest_Hill_Climb(tree, start, goal):
+def Steepest(tree, start, goal, heuristic, step_by_step = False):
+    if step_by_step:
+        print("--------")
     path = [start]
-    cost = 0
     if start == goal:
-        return (path, start)
+        return path
     
     while True:
         current_node = path[-1]
-        current_distance = haversine_hueristic(current_node, goal)
+        current_distance = heuristic(current_node, goal)
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        next_node = sorted(neighbors, key = lambda x: haversine_hueristic(x, goal))[0]
-        
-        if haversine_hueristic(next_node) > current_distance:
-            if path[-1] == goal:
-                return (path, cost)
-            else:
-                return 'Unable to find a path' 
-        
-        path.append(next_node[1])
-        
-        for node_weights in tree[1]:
-            if current_node != node_weights[0]:
-                continue
-            
-            for weight in node_weights[1]:
-                if current_node != weight[0]:
-                    continue
-                cost += weight[1]
-                break
-            break
+        sorted_neighbors = sorted(neighbors, key = lambda x: heuristic(x, goal))
+        next_node = sorted_neighbors[0]
+        if step_by_step: 
+            print(f"next node: {next_node}")
+            print(f"current distance: {current_distance}")
+            print(f"heuristic: {heuristic(next_node, goal)}")
+        if heuristic(next_node, goal) <= current_distance:
+            path.append(next_node)
+            if next_node == goal:
+                return path
+        else:
+            if step_by_step:
+                print([(neighbor, heuristic(neighbor, goal)) for neighbor in sorted_neighbors])
+                print(path)
+            return "No se encontro camino"
 
-def Stochastic_Hill_Climb(tree, start, goal):
+def Stochastic(tree, start, goal, heuristic, step_by_step = False):
+    if step_by_step:
+        print("------------")
     path = [start]
-    cost = 0
     if start == goal:
-        return (path, start)
+        return path
     
     while True:
         current_node = path[-1]
-        current_distance = haversine_hueristic(current_node, goal)
+        
+        current_distance = heuristic(current_node, goal)
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        filtered_neighbors = filter(lambda x: haversine_hueristic(x, goal) < current_distance, neighbors)
+        filtered_neighbors = list(filter(lambda x: heuristic(x, goal) < current_distance, neighbors))
+        if step_by_step:
+            print(f"current node: {current_node}")
+            print(f"neighbors: {neighbors}")
+            print(f"filtered neighbors: {filtered_neighbors}")
         if filtered_neighbors != []:
             random_index = random.randint(0, len(filtered_neighbors) - 1)
             next_node = filtered_neighbors[random_index]
+            if step_by_step:
+                print(f"next node: {next_node}")
             path.append(next_node)
         else:
             if current_node == goal:
-                return (path, cost)
+                return path
             else:
                 return "No se pudo encontrar un camino"
-        
-        for node_weights in tree[1]:
-            if current_node != node_weights[0]:
-                continue
-            
-            for weight in node_weights[1]:
-                if current_node != weight[0]:
-                    continue
-                cost += weight[1]
-                break
-            break
 
 def generate_initial_solution(tree, start):
     pass
