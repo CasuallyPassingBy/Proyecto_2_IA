@@ -441,36 +441,41 @@ def generate_unidirectional_weights(tree):
     unidirectional_tree = tree[0].copy()
     unidirectional_weights = []
 
-    #iterate through the tuples to obtain reversed connection
+    # iterate through the tuples to obtain the reversed connections
     for node_tuple in tree[0]:
-        city1, city2 = node_tuple
-        unidirectional_tree.append((city2, city1))
-    
-    #obtain the reversed weights
+        reversed_tuple = (node_tuple[1], node_tuple[0])
+        # add the reversed tuple to the unidirectional tree
+        unidirectional_tree.append(reversed_tuple)
+
+    # obtain the reversed weights
     reversed_weights = {}
     for weight in tree[1]:
         for connection in weight[1]:
             if connection[0] not in reversed_weights:
-                reversed_weights[connection[0]] = [(weight[0], connection[1])]
+                reversed_weights[connection[0]] = [(weight[0],connection[1])]
             else:
-                previuos_reversed_weight_value = reversed_weights[connection[0]]
-                previuos_reversed_weight_value.append((weight[0], connection[1]))
-                reversed_weights[connection[0]] = previuos_reversed_weight_value
+                previous_reversed_weight_value = reversed_weights[connection[0]]
+                previous_reversed_weight_value.append((weight[0],connection[1]))
+                reversed_weights[connection[0]] = previous_reversed_weight_value
     
-    # merge the weight lists
+    # merge the weights lists
     for weight in tree[1]:
+        # get the reversed weight and connections of the current node being iterated
         current_reversed_weights = []
         try:
             current_reversed_weights = reversed_weights[weight[0]]
         except:
             current_reversed_weights = []
-        
+
         current_connections = weight[1].copy()
-        if current_reversed_weights != []:
+        if len(current_reversed_weights) != 0:
             for current_reversed_weight in current_reversed_weights:
                 current_connections.append(current_reversed_weight)
         
-        unidirectional_weights.append[(weight[0], current_connections)]
+        unidirectional_weights.append([weight[0], current_connections])
+
+    return unidirectional_tree, unidirectional_weights
+
 
         
 # encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
