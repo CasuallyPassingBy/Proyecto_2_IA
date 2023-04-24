@@ -658,7 +658,7 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la heuristica
 #   cost: es el costo del camino según la euristica y el costo de transisión entre nodos     
-def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
+def a_estrella_ponderada(tree,start,goal, h_sld, weight = 1.3, step_by_step = False):
     
     if start == goal:
         # returns the path along with its transition cost
@@ -670,7 +670,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
     
     # here we will store all the paths availables as we process them
     #   to store the first path, we need to obtain its heuristic value
-    path = {int((1.3)* h_sld[start]): [start]}
+    path = {int(weight* h_sld[start]): [start]}
     if step_by_step:
         print('path initialised = ', path)
 
@@ -711,7 +711,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
                 # get the transition cost to the node
                 child_action_value = child[1]
                 # get the heuristic cost of the node
-                child_heuristic_value_with_detour_index = ((1.3) * h_sld[child_name])
+                child_heuristic_value_with_detour_index = (weight * h_sld[child_name])
                 if step_by_step:
                     print('\nchild = {}, action = {}, heuristic = {}'.format(child_name,child_action_value,child_heuristic_value_with_detour_index))
                 
@@ -877,11 +877,80 @@ def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
                 return "No se pudo encontrar un camino"
 
 def generate_initial_solution(tree, start):
-    pass
+    path = [edge[1] for edge in tree[0] if edge[0] == start]
+    path.insert(0, start)
+    path.append(start)
+    # print(path)
+    tuples_sol = []
+    for path_index in range(len(path) - 1):
+        node1 = path[path_index]
+        node2 = path[path_index + 1]
+        tuples_sol.append((node1, node2))
 
-def simmulated_annealing(solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir):
-    pass
+    for tuple_sol in tuples_sol:
+        if tuple_sol not in tree[0]:
+            return []
+    return path
 
+def generate_random_swap(solution:list[str]):
+    indeces = random.sample(range(1, len(solution) - 1), 2)
+    value1 = solution[indeces[0]]
+    value2 = solution[indeces[1]]
+    new_solution = solution.copy()
+    new_solution[indeces[0]], new_solution[indeces[1]] = value2, value1
+    return new_solution
+
+def decrease_temperature(temp, decrease_percentage_of_temp):
+    decrease_percentage = 100 * float(decrease_percentage_of_temp)/float(temp)
+    return decrease_percentage
+
+def get_cost_solution(tree, Path) -> int:
+    """Lo que hace esta función es calcular el costo de un camino dado el árbol, 
+    para poder comparar los resultados entre los distintos algoritmos"""
+    
+    cost = 0
+    path = Path.copy()
+
+    if path == []:
+        return cost
+
+    node = path.pop(0)
+    while path:
+        for weights in tree[1]:
+            if weights[0] != node:
+                continue
+            for connections in weights[1]:
+                if connections[0] != path[0]:
+                    continue
+                cost += connections[1]
+                break
+            break
+        node = path.pop(0)
+    return cost
+
+def simulated_annealling(tree, initial_sol, initial_temperature, stop_temperature, iterations, decrease_percentage_of_temp):
+    temperature = initial_temperature
+    current_solution = initial_sol
+    while temperature >= stop_temperature:
+        for iteration in range(iterations):
+            new_random_solution = generate_random_swap(current_solution)
+            current_solution_cost = get_cost_solution(tree,current_solution)
+            new_random_solution_cost = get_cost_solution(tree,new_random_solution)
+            difference_of_costs = current_solution_cost - new_random_solution_cost
+            if difference_of_costs >= 0:
+                current_solution = new_random_solution # if this happens that means we got a better solution
+            else:
+                acceptance_probability = math.exp(difference_of_costs/temperature)
+                # Generate the acceptance probability of the accepting the worse solution
+                uniform_random_number = random.uniform(0,1)
+                # Generate a random number to test if we are accepting the worse solution
+                if uniform_random_number <= acceptance_probability:
+                    current_solution = new_random_solution
+
+        alpha = decrease_temperature(temperature, decrease_percentage_of_temp)
+        temperature = int(temperature - alpha)
+        
+    return current_solution
 
 def submenu_1(tree, start, opcion):
     goal = validate_in("Ingrese la ciudad meta: ")
@@ -912,7 +981,7 @@ def submenu_5(tree, start):
     temperatura_final = 0
     numero_de_iteraciones = validate_int("Ingrese el número de iteraciones por temperatura: ")
     porcentaje_para_reducir = validate_int("Ingrese el número de porcentaje para reducir la temperatura: ")
-    return simmulated_annealing(solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir)
+    return simulated_annealling(tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir)
 
 def validate_in(command) -> str:
     """Es una función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades"""
