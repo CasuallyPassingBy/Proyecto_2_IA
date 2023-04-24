@@ -1009,30 +1009,27 @@ def simulated_annealling(tree, initial_sol, initial_temperature, stop_temperatur
     return current_solution
 
 
-def submenu_1(tree, start, opcion):
+def submenu_1(tree, start, opcion, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     heuristica = calcular_heuristica_distancia_de_linea_recta(goal)
     
     if opcion == 1:
-        return greedy(tree, start, goal, heuristica)
+        return greedy(tree, start, goal, heuristica, step_by_step)
     elif opcion == 2:
-        return a_estrella(tree,start,goal,heuristica)
+        return a_estrella(tree,start,goal,heuristica,step_by_step)
     elif opcion == 3:
-        return a_estrella_ponderada(tree,start,goal,heuristica)
+        return a_estrella_ponderada(tree,start,goal,heuristica,step_by_step)
     elif opcion == 5:
-        return Steepest_Hill_Climb(tree, start, goal)
+        return Steepest_Hill_Climb(tree, start, goal,step_by_step)
     else:
-        return Stochastic_Hill_Climb(tree, start, goal)
+        return Stochastic_Hill_Climb(tree, start, goal,step_by_step)
 
-def submenu_2(tree, start):
+def submenu_2(tree, start, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
-    return beam_search(tree, start, goal, numero_de_nodos_para_elegir)
+    return beam_search(tree, start, goal, numero_de_nodos_para_elegir, step_by_step)
 
-def submenu_3(tree, start):
-    pass
-
-def submenu_5(tree, start):
+def submenu_3(tree, start, step_by_step):
     solucion_inicial = generate_initial_solution(tree, start)
     temperatura_inicial = validate_int("¿Cual es la temperatura inicial? ")
     temperatura_final = 0
@@ -1083,6 +1080,16 @@ def menu():
             print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7)")
         else:
             break
+    while True:
+        info = input("\n¿Desea información paso por paso? (Si, No): ")
+        if info.upper() == "SI":
+            step_by_step = True
+            break
+        elif info.upper() == "NO":
+            step_by_step = False
+            break
+        else:
+            print("\nEscriba correctamente la respuesta. (Si, No)")
 
     if opcion < 7:
         tree = generate_states(formed_graph, names_formed_graph)
@@ -1094,13 +1101,13 @@ def menu():
         print('weights = ', tree[1], '\n')
 
     switch = {
-        1: submenu_1(tree, ciudad_origen, opcion),
-        2: submenu_1(tree, ciudad_origen, opcion),
-        3: submenu_1(tree, ciudad_origen, opcion),
-        4: submenu_2(tree, ciudad_origen),
-        5: submenu_1(tree, ciudad_origen, opcion),
-        6: submenu_1(tree, ciudad_origen, opcion),
-        7: submenu_3(tree, ciudad_origen)
+        1: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        2: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        3: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        4: submenu_2(tree, ciudad_origen, step_by_step),
+        5: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        6: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        7: submenu_3(tree, ciudad_origen, step_by_step)
     }
 
     return switch[opcion]
