@@ -1013,6 +1013,61 @@ def simulated_annealling(tree, initial_sol, initial_temperature, stop_temperatur
 
     return current_solution
 
+def branch_and_bound(tree, start, goal, step_by_step = False):
+    reached_goal = False
+    minimum_cost_reached = 0
+    best_solution = []
+
+    if start == goal:
+        return [start]
+    queue = [[start]]
+
+    def path_checker(path):
+        return (path[1] < minimum_cost_reached) or (path[0][-1] == goal and path[1] == minimum_cost_reached)
+
+    while queue:
+
+        path = queue.pop(0)
+        
+        current_node = path[-1]
+        neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+        if step_by_step:
+            print("-------------")
+            print(f"current path: {path}")
+            print(f"neighbors of {current_node}: {neighbors}")
+        paths = []
+
+        for neighbor in neighbors:
+            neighbor_path = path.copy()
+            neighbor_path.append(neighbor)
+            if step_by_step:
+                print(F"neighbor path: {neighbor_path}")
+            neighbor_path_cost = get_cost_solution(tree, neighbor_path)
+            paths.append((neighbor_path, neighbor_path_cost))
+
+            if neighbor == goal:
+                if not reached_goal:
+                    reached_goal = True
+                    minimum_cost_reached = neighbor_path_cost
+                    best_solution = neighbor_path
+                    if step_by_step:
+                        print(f"goal reached and the minimum path cost is {minimum_cost_reached}")
+                elif minimum_cost_reached > neighbor_path_cost:
+                    minimum_cost_reached = neighbor_path_cost
+                    best_solution = neighbor_path
+
+
+        if reached_goal:
+            filtered_paths = list(filter(path_checker, paths))
+            final_paths = list(map(lambda x: x[0], filtered_paths))
+        else:
+            final_paths =list(map(lambda x: x[0], paths))
+        queue += final_paths
+        # print(f"queue: {queue}")
+    if best_solution:
+        return best_solution
+    else:
+        return "No se encontro camino"
 
 def submenu_1(tree, start, opcion, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
@@ -1040,7 +1095,7 @@ def submenu_3(tree, start, step_by_step):
     temperatura_final = 0
     numero_de_iteraciones = validate_int("Ingrese el número de iteraciones por temperatura: ")
     porcentaje_para_reducir = validate_int("Ingrese el número de porcentaje para reducir la temperatura: ")
-    return simmulated_annealing(tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir)
+    return simulated_annealling(tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir)
 
 def validate_in(command) -> str:
     """Es una función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades"""
