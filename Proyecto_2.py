@@ -265,7 +265,7 @@ formed_graph = [
 
 #Lista de nombres para los algoritmos. 
 names_formed_graph = [
-    'CANCUN','VALLADOLID','FELIPE CARRILLO PUENTE','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLA HERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
+    'CANCUN','VALLADOLID','FELIPE CARRILLO PUERTO','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLA HERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
     'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOVA','VERACRUZ','CUERNAVACA','CIUDAD DE MÉXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
     'ATLACOMULCO','TUXPAN DE RODRIGUEZ CANO','SAN LUIS POTOSI','SALAMANCA','MORELIA','TAMPICO','GUANANJUATO','GUADALAJARA','ZACATECAS','AGUASCALIENTES','TEPIC','MAZATLAN','CULIACÁN','TOPOLOBAMPO ','CIUDAD OBREGÓN','GUAYMAS','HERMOSILLO','DURANGO','TORREÓN',
     'HIDALGO DEL PARRAL','CHIHUAHUA','JANOS','AGUA PRIETA','JUAREZ','SANTA ANA','MEXICALLI','SAN FELIPE','TIJUANA','ENSENADA','SAN QUINTIN','SANTA ROSALIA','SANTO DOMINGO','LA PAZ','CABO SAN LUCAS','CIUDAD VICTORIA','MONTERREY','MATAMOROS','NUEVO LAREDO',
@@ -537,7 +537,7 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
                 # get the heuristic cost of the node
                 child_heuristic_value = h_sld[child_name]
                 if step_by_step:
-                    print('\nchild = {}, action = {}, heuristic = {}'.format(child_name,child_heuristic_value))
+                    print('\nchild = {}, heuristic = {}'.format(child_name,child_heuristic_value))
 
                 # calculate the transition cost of the current node to the current child via
                 #   f(n) = h(n)
