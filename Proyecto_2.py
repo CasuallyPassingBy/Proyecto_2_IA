@@ -8,7 +8,7 @@
     26-abril-2023
     version 0.01
 
-    El presente codigo calcula la distancia euclideana entre dos ciudades 
+    El presente codigo calcula la distancia haversine entre dos ciudades 
     de los Estados Unidos Mexicanos, utilizando las coordenadas geograficas 
     de un par de ciudades. Esta distancia es utilizada para obtener los
     valores de la heuristica para el proyecto del 2do Parcial de la materia.
