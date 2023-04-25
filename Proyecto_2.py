@@ -1093,8 +1093,10 @@ def submenu_1(tree, start, opcion, step_by_step):
         return a_estrella_ponderada(tree,start,goal,heuristica,step_by_step)
     elif opcion == 5:
         return Steepest_Hill_Climb(tree, start, goal,step_by_step)
-    else:
+    elif opcion == 6:
         return Stochastic_Hill_Climb(tree, start, goal,step_by_step)
+    else:
+        return Branch_and_Bound(tree, start, goal, step_by_step)
 
 def submenu_2(tree, start, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
@@ -1143,13 +1145,14 @@ def menu():
     print("\n 5) Steepest Hill Climbing Search")
     print("\n 6) Stochastic Hill Climbing Search")
     print("\n 7) Simulated Annealing Search")
+    print("\n 8) Branch and Bound")
 
     while True:
-        opcion = int(input("\n¿Qué número de algoritmo del menu anterior desea correr (1,2,3,4,5,6,7)? "))
-        if opcion > 7:
-            print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7)")
+        opcion = int(input("\n¿Qué número de algoritmo del menu anterior desea correr (1,2,3,4,5,6,7,8)? "))
+        if opcion > 8:
+            print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7,8)")
         elif opcion < 1:
-            print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7)")
+            print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7,8)")
         else:
             break
     while True:
@@ -1179,7 +1182,8 @@ def menu():
         4: submenu_2(tree, ciudad_origen, step_by_step),
         5: submenu_1(tree, ciudad_origen, opcion, step_by_step),
         6: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-        7: submenu_3(tree, ciudad_origen, step_by_step)
+        7: submenu_3(tree, ciudad_origen, step_by_step),
+        8: submenu_1(tree, ciudad_origen, opcion, step_by_step)
     }
 
     return switch[opcion]
