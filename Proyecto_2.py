@@ -70,8 +70,6 @@ FUNCIONES O CLASES DE APOYO:
 FUNCIONES O CLASES PRINCIPALES:
     - calcular_heuristica_distancia_de_linea_recta:     Calcula la heuristica para una ciudad objetivo
     - generate_states:  Función que forma las tuplas a partir de las matrizes.
-    - generate_unidirectional_weights:  Funcion que toma una lista de tuplas  y las "duplica" para que se pueda viajar en ambas direcciones. 
-                                        Es decir hace que un árbol dirigido se haga  unidireccional.
     - greedy:   Función que realiza el algoritmo greedy-best first search.
     - a_estrella:   Función que realiza el algoritmo de A*.
     - a_estrella_ponderada:     Función que realiza el algoritmo de A estrella ponderada.
@@ -265,10 +263,10 @@ formed_graph = [
 
 #Lista de nombres para los algoritmos. 
 names_formed_graph = [
-    'CANCUN','VALLADOLID','FELIPE CARRILLO PUENTE','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLA HERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
-    'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOVA','VERACRUZ','CUERNAVACA','CIUDAD DE MÉXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
-    'ATLACOMULCO','TUXPAN DE RODRIGUEZ CANO','SAN LUIS POTOSI','SALAMANCA','MORELIA','TAMPICO','GUANANJUATO','GUADALAJARA','ZACATECAS','AGUASCALIENTES','TEPIC','MAZATLAN','CULIACÁN','TOPOLOBAMPO ','CIUDAD OBREGÓN','GUAYMAS','HERMOSILLO','DURANGO','TORREÓN',
-    'HIDALGO DEL PARRAL','CHIHUAHUA','JANOS','AGUA PRIETA','JUAREZ','SANTA ANA','MEXICALLI','SAN FELIPE','TIJUANA','ENSENADA','SAN QUINTIN','SANTA ROSALIA','SANTO DOMINGO','LA PAZ','CABO SAN LUCAS','CIUDAD VICTORIA','MONTERREY','MATAMOROS','NUEVO LAREDO',
+    'CANCUN','VALLADOLID','FELIPE CARRILLO PUERTO','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLAHERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
+    'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOBA','VERACRUZ','CUERNAVACA','CIUDAD DE MEXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
+    'ATLACOMULCO','TUXPAN DE RODRIGUEZ CANO','SAN LUIS POTOSI','SALAMANCA','MORELIA','TAMPICO','GUANAJUATO','GUADALAJARA','ZACATECAS','AGUASCALIENTES','TEPIC','MAZATLAN','CULIACAN','TOPOLOBAMPO','CIUDAD OBREGON','GUAYMAS','HERMOSILLO','DURANGO','TORREON',
+    'HIDALGO DEL PARRAL','CHIHUAHUA','JANOS','AGUA PRIETA','CIUDAD JUAREZ','SANTA ANA','MEXICALI','SAN FELIPE','TIJUANA','ENSENADA','SAN QUINTIN','SANTA ROSALIA','SANTO DOMINGO','LA PAZ','CABO SAN LUCAS','CIUDAD VICTORIA','MONTERREY','MATAMOROS','NUEVO LAREDO',
     'PIEDRAS NEGRAS','REYNOSA','SOTO LA MARINA','MONCLOVA','OJINAGA','TLAXCALA'
 ]
 
@@ -436,53 +434,6 @@ def generate_states(graph, available_nodes_names):
             nodes_connection_weights.append([available_nodes_names[matrix_row_index], connections_and_weights])
     return nodes_tuples, nodes_connection_weights
 
-# Funcion que toma una lista de tuplas  y las "duplica" para que se pueda viajar en ambas direcciones. Es decir hace que un árbol dirigido se haga 
-# unidireccional.
-# entrada:
-#   Tree = Lista de tuplas que representan a un arbol dirigido. 
-# salida:
-#   N/A
-#  Modifica las lista de listas formadas en generate states para que se hagan unidireccionalmente. 
-
-def generate_unidirectional_weights(tree):
-    unidirectional_tree = tree[0].copy()
-    unidirectional_weights = []
-
-    # iterate through the tuples to obtain the reversed connections
-    for node_tuple in tree[0]:
-        reversed_tuple = (node_tuple[1], node_tuple[0])
-        # add the reversed tuple to the unidirectional tree
-        unidirectional_tree.append(reversed_tuple)
-
-    # obtain the reversed weights
-    reversed_weights = {}
-    for weight in tree[1]:
-        for connection in weight[1]:
-            if connection[0] not in reversed_weights:
-                reversed_weights[connection[0]] = [(weight[0],connection[1])]
-            else:
-                previous_reversed_weight_value = reversed_weights[connection[0]]
-                previous_reversed_weight_value.append((weight[0],connection[1]))
-                reversed_weights[connection[0]] = previous_reversed_weight_value
-    
-    # merge the weights lists
-    for weight in tree[1]:
-        # get the reversed weight and connections of the current node being iterated
-        current_reversed_weights = []
-        try:
-            current_reversed_weights = reversed_weights[weight[0]]
-        except:
-            current_reversed_weights = []
-
-        current_connections = weight[1].copy()
-        if len(current_reversed_weights) != 0:
-            for current_reversed_weight in current_reversed_weights:
-                current_connections.append(current_reversed_weight)
-        
-        unidirectional_weights.append([weight[0], current_connections])
-
-    return unidirectional_tree, unidirectional_weights
-
 
         
 # encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
@@ -500,12 +451,12 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
         return [start]
     iteration_counter = 0
     if step_by_step:
-        print('\n--- search iteration {} ---'.format(iteration_counter))
+        print('\n--- iteración {} ---'.format(iteration_counter))
     # here we will store all the paths availables as we process them
     # to store the first path, we need to obtain its heuristic value
     path = {h_sld[start] : [start]}
     if step_by_step:
-        print('path initialised = ', path)
+        print('camino iniciado = ', path)
     # update the iteration number
     iteration_counter = 1
     while True:
@@ -515,9 +466,9 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
         
         current_node = path[key_path_with_lower_value][-1]
         if step_by_step:
-            print('\n--- search iteration {} ---'.format(iteration_counter))
+            print('\n--- iteracion {} ---'.format(iteration_counter))
             print(key_path_with_lower_value)
-            print('\nnode being explored = ', current_node)
+            print('\nNodo siendo expandido = ', current_node)
         if current_node == goal:
             # returns the path along with its transition cost
             return path[key_path_with_lower_value]
@@ -526,31 +477,31 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
         childs = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == current_node]
         # these childs have the cost of the action, we need to find its heuristic value
         if step_by_step:
-            print('\nchilds = ', childs)
+            print('\nhijos = ', childs)
         if childs != []:
             childs_with_h_values = []
 
             for child in childs[0]:
                 if step_by_step:
-                    print('\nchild being processed ', child)
+                    print('\nhijo siendo procesado ', child)
                 child_name = child[0]
                 # get the heuristic cost of the node
                 child_heuristic_value = h_sld[child_name]
                 if step_by_step:
-                    print('\nchild = {} , heuristic = {}'.format(child_name,child_heuristic_value))
+                    print('\nhijo = {}, heurisitica = {}'.format(child_name,child_heuristic_value))
 
                 # calculate the transition cost of the current node to the current child via
                 #   f(n) = h(n)
                 total_transition_cost = child_heuristic_value
                 if step_by_step:
-                    print('total_transition_cost ', total_transition_cost)
+                    print('costo total de transcición ', total_transition_cost)
                 # save the path with the corresponding transition cost
                 childs_with_h_values.append((child_name,total_transition_cost))
             
             sorted_childs_with_h_values = sorted(childs_with_h_values, key = lambda x: x[1])
             if step_by_step:
-                print('\nchilds with h values = ', childs_with_h_values)
-                print('\nchilds with h values sorted = ', sorted_childs_with_h_values)
+                print('\nhijos con h valores = ', childs_with_h_values)
+                print('\nhijos con h valores organizados = ', sorted_childs_with_h_values)
             # update the paths expanded so far; in this way, we save the alternative paths
             for child in sorted_childs_with_h_values:
                 temp_updated_path = path[key_path_with_lower_value].copy()
@@ -561,10 +512,10 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
             # delete the current path (old)
             del path[key_path_with_lower_value]
             if step_by_step:
-                print('\navailable paths = ', path)
+                print('\ncaminos disponibles = ', path)
         else:
             # After visiting its neighbors, we mark the node as "visited"
-            return 'Unable to find a path'
+            return 'No se encontro camino.'
         
         iteration_counter += 1
         
@@ -587,13 +538,13 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
     
     iteration_counter = 0
     if step_by_step:
-        print('\n--- search iteration {} ---'.format(iteration_counter))
+        print('\n--- iteración {} ---'.format(iteration_counter))
     
     # here we will store all the paths availables as we process them
     #   to store the first path, we need to obtain its heuristic value
     path = {h_sld[start]: [start]}
     if step_by_step:
-        print('path initialised = ', path)
+        print('camino iniciado = ', path)
 
     # update the iteration number
     iteration_counter += 1
@@ -606,9 +557,9 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
         current_node = path[key_path_with_lower_value][-1]
 
         if step_by_step:
-            print('\n--- search iteration {} ---'.format(iteration_counter))
+            print('\n--- iteración {} ---'.format(iteration_counter))
             print(key_path_with_lower_value)
-            print('\nnode being explored = ', current_node)
+            print('\nnodo siendo explorado = ', current_node)
 
         if current_node == goal:
             # returns the path along with its transition cost
@@ -617,7 +568,7 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
         # search for the childs of the current node
         childs = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == current_node]
         if step_by_step:
-            print('\nchilds = ', childs)
+            print('\nhijos = ', childs)
 
         # these childs have the cost of the action, we need to find its heuristic value
         if len(childs) != 0:
@@ -625,14 +576,14 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
 
             for child in childs[0]:
                 if step_by_step:
-                    print('\nchild being processed ', child)
+                    print('\nhijo siendo procesado ', child)
                 child_name = child[0]
                 # get the transition cost to the node
                 child_action_value = child[1]
                 # get the heuristic cost of the node
                 child_heuristic_value = h_sld[child_name]
                 if step_by_step:
-                    print('\nchild = {}, action = {}, heuristic = {}'.format(child_name,child_action_value,child_heuristic_value))
+                    print('\nhijo = {}, acción = {}, heuristica = {}'.format(child_name,child_action_value,child_heuristic_value))
                 
                 # check for the previous cities to update the transition cost
                 acucumulative_transition_cost = 0
@@ -647,22 +598,22 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
 
                 acucumulative_transition_cost += child_action_value
                 if step_by_step:
-                    print('acucumulative_transition_cost ', acucumulative_transition_cost)
+                    print('costo acumulativo de transcición ', acucumulative_transition_cost)
 
                 # calculate the transition cost of the current node to the current child via
                 #   f(n) = g(n) + h(n)
                 total_transition_cost = acucumulative_transition_cost + child_heuristic_value
                 if step_by_step:
-                    print('total_transition_cost ', total_transition_cost)
+                    print('costo total de transcición ', total_transition_cost)
 
                 # save the path with the corresponding transition cost
                 childs_with_h_values.append((child_name,total_transition_cost))
 
             if step_by_step:
-                print('\nchilds with h values = ', childs_with_h_values)
+                print('\nhijos con h valores = ', childs_with_h_values)
             sorted_childs_with_h_values = sorted(childs_with_h_values, key=lambda x: x[1])
             if step_by_step:
-                print('\nchilds with h values sorted = ', sorted_childs_with_h_values)
+                print('\nhijos con h valores organizados = ', sorted_childs_with_h_values)
 
             # update the paths expanded so far; in this way, we save the alternative paths
             for child in sorted_childs_with_h_values:
@@ -675,10 +626,10 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
             del path[key_path_with_lower_value]
 
             if step_by_step:
-                print('\navailable paths = ', path)
+                print('\ncaminos disponibles = ', path)
         else:
             # After visiting its neighbors, we mark the node as "visited"
-            return 'Unable to find a path'
+            return 'No se encontro camino.'
         
         iteration_counter += 1
 
@@ -701,20 +652,20 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
     
     iteration_counter = 0
     if step_by_step:
-        print('\n--- search iteration {} ---'.format(iteration_counter))
+        print('\n--- iteración {} ---'.format(iteration_counter))
     
     # here we will store all the paths availables as we process them
     #   to store the first path, we need to obtain its heuristic value
     path = {int((1.3)* h_sld[start]): [start]}
     if step_by_step:
-        print('path initialised = ', path)
+        print('camino iniciado = ', path)
 
     # update the iteration number
     iteration_counter += 1
 
     while True:
         if step_by_step:
-            print('\n--- search iteration {} ---'.format(iteration_counter))
+            print('\n--- iteración {} ---'.format(iteration_counter))
         
         # select the path with the lowest cost
         key_path_with_lower_value = min([int(key) for key, values in path.items()])
@@ -724,7 +675,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
         # here
         current_node = path[key_path_with_lower_value][-1]
         if step_by_step:
-            print('\nnode being explored = ', current_node)
+            print('\nnodo siendo explorado = ', current_node)
 
         if current_node == goal:
             # returns the path along with its transition cost
@@ -733,7 +684,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
         # search for the childs of the current node
         childs = [node_weights_list[1] for node_weights_list in tree[1] if node_weights_list[0] == current_node]
         if step_by_step:
-            print('\nchilds = ', childs)
+            print('\nhijos = ', childs)
 
         # these childs have the cost of the action, we need to find its heuristic value
         if len(childs) != 0:
@@ -741,14 +692,14 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
 
             for child in childs[0]:
                 if step_by_step:
-                    print('\nchild being processed ', child)
+                    print('\nhijo siendo procesado ', child)
                 child_name = child[0]
                 # get the transition cost to the node
                 child_action_value = child[1]
                 # get the heuristic cost of the node
                 child_heuristic_value_with_detour_index = ((1.3) * h_sld[child_name])
                 if step_by_step:
-                    print('\nchild = {}, action = {}, heuristic = {}'.format(child_name,child_action_value,child_heuristic_value_with_detour_index))
+                    print('\nhijo = {}, acción = {}, heuristica = {}'.format(child_name,child_action_value,child_heuristic_value_with_detour_index))
                 
                 # check for the previous cities to update the transition cost
                 acucumulative_transition_cost = 0
@@ -763,22 +714,22 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
 
                 acucumulative_transition_cost += child_action_value
                 if step_by_step:
-                    print('acucumulative_transition_cost ', acucumulative_transition_cost)
+                    print('costo acumulativo de transcición ', acucumulative_transition_cost)
 
                 # calculate the transition cost of the current node to the current child via
                 #   f(n) = g(n) + h(n)
                 total_transition_cost = int(acucumulative_transition_cost + child_heuristic_value_with_detour_index)
                 if step_by_step:
-                    print('total_transition_cost ', total_transition_cost)
+                    print('costo total de transcición ', total_transition_cost)
 
                 # save the path with the corresponding transition cost
                 childs_with_h_values.append((child_name,total_transition_cost))
 
             if step_by_step:
-                print('\nchilds with h values = ', childs_with_h_values)
+                print('\nhijos con h valores = ', childs_with_h_values)
             sorted_childs_with_h_values = sorted(childs_with_h_values, key=lambda x: x[1])
             if step_by_step:
-                print('\nchilds with h values sorted = ', sorted_childs_with_h_values)
+                print('\nhijos con h valores organizados = ', sorted_childs_with_h_values)
 
             # update the paths expanded so far; in this way, we save the alternative paths
             for child in sorted_childs_with_h_values:
@@ -791,10 +742,10 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
             del path[key_path_with_lower_value]
 
             if step_by_step:
-                print('\navailable paths = ', path)
+                print('\ncaminos disponibles = ', path)
         else:
             # After visiting its neighbors, we mark the node as "visited"
-            return 'Unable to find a path'
+            return 'No se encontro camino.'
         iteration_counter += 1
 
 # encuentra un camino desde el nodo de inicio hasta el nodo meta utilizadno
@@ -1291,6 +1242,7 @@ def validate_int(command) -> int:
 # salida:
 #   Llamar las funciones pertinentes que dependiendo del algoritmo que el usuario quiera ejecutar.
 def menu():
+
     ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
 
     print("------Menú------")
@@ -1311,7 +1263,6 @@ def menu():
             print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7,8)")
         else:
             break
-    
     while True:
         info = input("\n¿Desea información paso por paso? (Si, No): ")
         if info.upper() == "SI":
@@ -1323,26 +1274,27 @@ def menu():
         else:
             print("\nEscriba correctamente la respuesta. (Si, No)")
 
-    if opcion < 7 or opcion == 8:
+    if opcion < 7:
         tree = generate_states(formed_graph, names_formed_graph)
+        print('\ntree = ', tree[0], '\n')
+        print('weights = ', tree[1], '\n')
     else:
         tree = generate_states(formed_graph_unidireccional_pesos_heuristica, names_unidireccional)
-    
-    print('\ntree = ', tree[0], '\n')
-    print('weights = ', tree[1], '\n')
-    print(f"opcion : {opcion}")
+        print('\ntree = ', tree[0], '\n')
+        print('weights = ', tree[1], '\n')
 
-    # switch = {
-    #     1: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     2: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     3: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     4: submenu_2(tree, ciudad_origen, step_by_step),
-    #     5: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     6: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     7: submenu_3(tree, ciudad_origen, step_by_step),
-    #     8: submenu_1(tree, ciudad_origen, opcion, step_by_step)
-    # }
+    switch = {
+        1: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        2: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        3: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        4: submenu_2(tree, ciudad_origen, step_by_step),
+        5: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        6: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        7: submenu_3(tree, ciudad_origen, step_by_step),
+        8: submenu_1(tree, ciudad_origen, opcion, step_by_step)
+    }
 
+<<<<<<< HEAD
     if opcion in [1,2,3,5,6,8]:
         resultado = submenu_1(tree, ciudad_origen, opcion, step_by_step)
     elif opcion == 2:
@@ -1357,6 +1309,10 @@ def menu():
     else:
         print(f"{resultado[0]} ademas se tardo {resultado[1]}")
         
+=======
+    return switch[opcion]
+
+>>>>>>> 31c6db3efa01d30ae0327babf74f62e9f22b8848
 # Función que inicializa el programa y llama a menu.
 def main():
     menu()
