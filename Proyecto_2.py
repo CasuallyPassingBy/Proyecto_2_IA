@@ -62,7 +62,7 @@ FUNCIONES O CLASES DE APOYO:
     - submenu_2: Función que llama al algoritmo Beam, con los requerimientos que este pide.
     - submenu_3: Función que llama al algoritmo simmulated annealing, con los requerimientos que este pide.
     - validate_in: Función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades.
-    - validate_int: Función que se asegura que se ingreso un número no negativo.
+    - validate_int: Función que se asegura que se ingreso un número entero no negativo.
     - generate_initial_solution: Función que genera un camino entre el start node y sus hijos, formando un camino cerrado.
     - generate_random_swap: Función que invierte el orden de los elemnetos de una lista de strings.
     - decrease_temperature: Función que calcula el porcentaje con el que baja la temperatura
@@ -1255,6 +1255,11 @@ def submenu_3(tree, start, step_by_step):
     porcentaje_para_reducir = validate_int("Ingrese el número de porcentaje para reducir la temperatura: ")
     return measure_time(simulated_annealing, tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir, step_by_step)
 
+# Función que valida que el nodo encontrado este dentro de los lista de nombres de las ciudades.
+# entrada:
+#   command: El nombre de la ciudad que se va a validar en la lista de ciudades
+# salida:
+#   city:  El nombre de la ciudad si es válido o un mensaje de error
 def validate_in(command) -> str:
     """Es una función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades"""
     while True:
@@ -1264,6 +1269,11 @@ def validate_in(command) -> str:
         print("El nombre de la ciudad ingresada no esta presente.")
     return city
 
+# Función que valida que el número que de el usuario sea valido.
+# entrada:
+#   command: El número que se va a validar que sea válido
+# salida:
+#   city:  El número si es válido o un mensaje de error.
 def validate_int(command) -> int:
     """Es una función que se asegura que se ingreso un número no negativo"""
     while True:
@@ -1276,7 +1286,11 @@ def validate_int(command) -> int:
             print("Ingrese un número")
     return numero_ingresado
 
-
+# Función que inicializa el programa, le pide al usuario que algoritmo quiere correr y los atributos que ese algoritmo pide.
+# entrada:
+#   N/A
+# salida:
+#   Llamar las funciones pertinentes que dependiendo del algoritmo que el usuario quiera ejecutar.
 def menu():
 
     ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
@@ -1332,6 +1346,7 @@ def menu():
 
     return switch[opcion]
 
+# Función que inicializa el programa y llama a menu.
 def main():
     menu()
 
