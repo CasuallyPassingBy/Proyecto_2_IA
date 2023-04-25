@@ -265,10 +265,10 @@ formed_graph = [
 
 #Lista de nombres para los algoritmos. 
 names_formed_graph = [
-    'CANCUN','VALLADOLID','FELIPE CARRILLO PUENTE','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLA HERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
-    'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOVA','VERACRUZ','CUERNAVACA','CIUDAD DE MÉXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
-    'ATLACOMULCO','TUXPAN DE RODRIGUEZ CANO','SAN LUIS POTOSI','SALAMANCA','MORELIA','TAMPICO','GUANANJUATO','GUADALAJARA','ZACATECAS','AGUASCALIENTES','TEPIC','MAZATLAN','CULIACÁN','TOPOLOBAMPO ','CIUDAD OBREGÓN','GUAYMAS','HERMOSILLO','DURANGO','TORREÓN',
-    'HIDALGO DEL PARRAL','CHIHUAHUA','JANOS','AGUA PRIETA','JUAREZ','SANTA ANA','MEXICALLI','SAN FELIPE','TIJUANA','ENSENADA','SAN QUINTIN','SANTA ROSALIA','SANTO DOMINGO','LA PAZ','CABO SAN LUCAS','CIUDAD VICTORIA','MONTERREY','MATAMOROS','NUEVO LAREDO',
+    'CANCUN','VALLADOLID','FELIPE CARRILLO PUERTO','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLAHERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
+    'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOBA','VERACRUZ','CUERNAVACA','CIUDAD DE MEXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
+    'ATLACOMULCO','TUXPAN DE RODRIGUEZ CANO','SAN LUIS POTOSI','SALAMANCA','MORELIA','TAMPICO','GUANAJUATO','GUADALAJARA','ZACATECAS','AGUASCALIENTES','TEPIC','MAZATLAN','CULIACAN','TOPOLOBAMPO ','CIUDAD OBREGON','GUAYMAS','HERMOSILLO','DURANGO','TORREON',
+    'HIDALGO DEL PARRAL','CHIHUAHUA','JANOS','AGUA PRIETA','CIUDAD JUAREZ','SANTA ANA','MEXICALI','SAN FELIPE','TIJUANA','ENSENADA','SAN QUINTIN','SANTA ROSALIA','SANTO DOMINGO','LA PAZ','CABO SAN LUCAS','CIUDAD VICTORIA','MONTERREY','MATAMOROS','NUEVO LAREDO',
     'PIEDRAS NEGRAS','REYNOSA','SOTO LA MARINA','MONCLOVA','OJINAGA','TLAXCALA'
 ]
 
@@ -537,7 +537,7 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
                 # get the heuristic cost of the node
                 child_heuristic_value = h_sld[child_name]
                 if step_by_step:
-                    print('\nchild = {} , heuristic = {}'.format(child_name,child_heuristic_value))
+                    print('\nchild = {}, heuristic = {}'.format(child_name,child_heuristic_value))
 
                 # calculate the transition cost of the current node to the current child via
                 #   f(n) = h(n)
@@ -1292,6 +1292,7 @@ def validate_int(command) -> int:
 # salida:
 #   Llamar las funciones pertinentes que dependiendo del algoritmo que el usuario quiera ejecutar.
 def menu():
+
     ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
 
     print("------Menú------")
@@ -1312,7 +1313,6 @@ def menu():
             print("\nElija una de las opciones disponibles (1,2,3,4,5,6,7,8)")
         else:
             break
-    
     while True:
         info = input("\n¿Desea información paso por paso? (Si, No): ")
         if info.upper() == "SI":
@@ -1324,32 +1324,27 @@ def menu():
         else:
             print("\nEscriba correctamente la respuesta. (Si, No)")
 
-    if opcion < 7 or opcion == 8:
+    if opcion < 7:
         tree = generate_states(formed_graph, names_formed_graph)
+        print('\ntree = ', tree[0], '\n')
+        print('weights = ', tree[1], '\n')
     else:
         tree = generate_states(formed_graph_unidireccional_pesos_heuristica, names_unidireccional)
-    
-    print('\ntree = ', tree[0], '\n')
-    print('weights = ', tree[1], '\n')
-    print(f"opcion : {opcion}")
+        print('\ntree = ', tree[0], '\n')
+        print('weights = ', tree[1], '\n')
 
-    # switch = {
-    #     1: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     2: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     3: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     4: submenu_2(tree, ciudad_origen, step_by_step),
-    #     5: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     6: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-    #     7: submenu_3(tree, ciudad_origen, step_by_step),
-    #     8: submenu_1(tree, ciudad_origen, opcion, step_by_step)
-    # }
+    switch = {
+        1: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        2: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        3: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        4: submenu_2(tree, ciudad_origen, step_by_step),
+        5: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        6: submenu_1(tree, ciudad_origen, opcion, step_by_step),
+        7: submenu_3(tree, ciudad_origen, step_by_step),
+        8: submenu_1(tree, ciudad_origen, opcion, step_by_step)
+    }
 
-    if opcion in [1,2,3,5,6,8]:
-        return submenu_1(tree, ciudad_origen, opcion, step_by_step)
-    elif opcion == 2:
-        return submenu_2(tree, ciudad_origen, step_by_step)
-    elif opcion == 7:
-        return submenu_3(tree, ciudad_origen, step_by_step)
+    return switch[opcion]
 
 # Función que inicializa el programa y llama a menu.
 def main():
