@@ -923,7 +923,7 @@ def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
         # We get the neighbors of the current node, so that we can filter them weather or not
         # they are closer than our current node 
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
-        filtered_neighbors = list(filter(lambda x: heuristic(x, goal) <= current_distance, neighbors))
+        filtered_neighbors = list(filter(lambda x: heuristic(x, goal) < current_distance, neighbors))
         if step_by_step:
             print(f"current node: {current_node}")
             print(f"neighbors: {neighbors}")
@@ -942,7 +942,7 @@ def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
             if current_node == goal:
                 return path
             else:
-                return "No se pudo encontrar un camino"
+                return "No se pudo encontrar un camino, intente otra vez"
             
 # Función que genera un camino entre el start node y sus hijos, formando un camino cerrado.
 # entrada:
@@ -1195,13 +1195,13 @@ def branch_and_bound(tree, start, goal, step_by_step = False):
 def measure_time(f, *args):
     """Lo que importa de aqui es el hecho que **kwargs guarda el los inputs de la función f,
      lo cual es muy util en caso de que los algoritmos de busqueda que se miden tengan distinto numero de algoritmos
-     ademas, el tiempo que saca esta en ms"""
+     ademas, el tiempo que saca esta en seg"""
     start_time = time()
     val = f(*args)
     end_time = time()
     if val is not None:
-        return (val, (end_time - start_time)*(10 ** 3))
-    return (end_time - start_time)*(10 ** 3)
+        return (val, (end_time - start_time)*(10 ** 6))
+    return (end_time - start_time)*(10 ** 6)
 
 # Función que llama a los algoritmos greedy first, A estrella, A ponderada, steepest hill y stochasaticl hill.
 # entrada:
@@ -1285,7 +1285,6 @@ def validate_int(command) -> int:
         except:
             print("Ingrese un número")
     return numero_ingresado
-
 # Función que inicializa el programa, le pide al usuario que algoritmo quiere correr y los atributos que ese algoritmo pide.
 # entrada:
 #   N/A
@@ -1295,14 +1294,14 @@ def menu():
     ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
 
     print("------Menú------")
-    print("\n 1) Greedy Best First Search")
+    print("\n 1) Greedy Best First Search") # get_cost
     print("\n 2) A* Search")
     print("\n 3) Weighted A* Search")
-    print("\n 4) Beam Search")
-    print("\n 5) Steepest Hill Climbing Search")
-    print("\n 6) Stochastic Hill Climbing Search")
-    print("\n 7) Simulated Annealing Search")
-    print("\n 8) Branch and Bound")
+    print("\n 4) Beam Search") # get_cost
+    print("\n 5) Steepest Hill Climbing Search") # get_cost
+    print("\n 6) Stochastic Hill Climbing Search") # get_cost
+    print("\n 7) Simulated Annealing Search") # get_cost
+    print("\n 8) Branch and Bound") # get_cost
 
     while True:
         opcion = int(input("\n¿Qué número de algoritmo del menu anterior desea correr (1,2,3,4,5,6,7,8)? "))
@@ -1345,12 +1344,19 @@ def menu():
     # }
 
     if opcion in [1,2,3,5,6,8]:
-        return submenu_1(tree, ciudad_origen, opcion, step_by_step)
+        resultado = submenu_1(tree, ciudad_origen, opcion, step_by_step)
     elif opcion == 2:
-        return submenu_2(tree, ciudad_origen, step_by_step)
+        resultado = submenu_2(tree, ciudad_origen, step_by_step)
     elif opcion == 7:
-        return submenu_3(tree, ciudad_origen, step_by_step)
-
+        resultado = submenu_3(tree, ciudad_origen, step_by_step)
+    
+    if type(resultado[0]) == tuple:
+        print(f"el camino encontrado: {resultado[0][0]} con un costo del algoritmo de {resultado[0][1]} en un tiempo de {resultado[1]}")
+    elif type(resultado[0]) != str:
+        print(f"el camino encontrado: {resultado[0]} con un costo de {get_cost_solution(tree, resultado[0])}, en un tiempo de {resultado[1]}")
+    else:
+        print(f"{resultado[0]} ademas se tardo {resultado[1]}")
+        
 # Función que inicializa el programa y llama a menu.
 def main():
     menu()
