@@ -1086,17 +1086,17 @@ def submenu_1(tree, start, opcion, step_by_step):
     heuristica = calcular_heuristica_distancia_de_linea_recta(goal)
     
     if opcion == 1:
-        return measure_time(greedy(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
+        return measure_time(greedy, tree, start, goal, heuristica, step_by_step)
     elif opcion == 2:
-        return measure_time(a_estrella(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
+        return measure_time(a_estrella, tree, start, goal, heuristica, step_by_step)
     elif opcion == 3:
-        return measure_time(a_estrella_ponderada(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
+        return measure_time(a_estrella_ponderada, tree, start, goal, heuristica, step_by_step)
     elif opcion == 5:
-        return measure_time(Steepest_Hill_Climb(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
+        return measure_time(Steepest_Hill_Climb, tree, start, goal, heuristica, step_by_step)
     elif opcion == 6:
-        return measure_time(Stochastic_Hill_Climb(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
+        return measure_time(Stochastic_Hill_Climb, tree, start, goal, heuristica, step_by_step)
     else:
-        return measure_time(Branch_and_Bound(tree, start, goal, step_by_step), tree, start, goal, step_by_step)
+        return measure_time(branch_and_bound, tree, start, goal, step_by_step)
 
 def submenu_2(tree, start, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
