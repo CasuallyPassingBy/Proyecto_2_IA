@@ -60,7 +60,7 @@ FUNCIONES O CLASES DE APOYO:
     - submenu_1: Función que llama a los algoritmos: greedy, a estrella, a ponderada, a estrella ponderada, steepest hill climbing, stochastic
                  hill climbing. En esta funcion se pide a los usuarios los requerimientos particulares de cada algoritmo.
     - submenu_2: Función que llama al algoritmo Beam, con los requerimientos que este pide.
-    - submenu_3: pass
+    - submenu_3: Función que llama al algoritmo simmulated annealing, con los requerimientos que este pide.
     - validate_in: Función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades.
     - validate_int: Función que se asegura que se ingreso un número no negativo.
     - generate_initial_solution: Función que genera un camino entre el start node y sus hijos, formando un camino cerrado.
@@ -83,6 +83,7 @@ FUNCIONES O CLASES PRINCIPALES:
     - simulated_annealling:     Función que realiza el algoritmo de simulated annealing.
     - branch_and_bound:     Función que realiza el algoritmo de branch and bound.
     - menu:     Función que pregunta al usuario que algoritmo quiere utlizar, y donde pide y valida los requerimientos de cada algoritmo.
+    - measure_time:     Función que calcula el tiempo de ejecución de los algoritmos de busqueda.
     - main:     Función que inicializa el programa y llama a menu. 
     
 """
@@ -371,6 +372,8 @@ def haversine_distance_between_cities(origin,goal):
     distancia_haversine = constante_R * aux_c
     # calcula la distancia haversine entre dos ciudades y regresa su valor redondeado
     return round(distancia_haversine)
+
+
 
 # Transforma las ciudades en las tuplas de latitud y longitud para poder calcular
 # la distancia de haversine de manera mas comoda:
@@ -940,6 +943,7 @@ def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
                 return path
             else:
                 return "No se pudo encontrar un camino"
+            
 # Función que genera un camino entre el start node y sus hijos, formando un camino cerrado.
 # entrada:
 #   start: nombre de la ciudad de inicio
@@ -1181,6 +1185,13 @@ def branch_and_bound(tree, start, goal, step_by_step = False):
         return "No se encontro camino"
 
 
+# Función que calcula el tiempo de ejecución de los algortimos de busqueda.
+# entrada:
+#   f: La función que a la cual se va a calcualr su tiempo de ejecucion.
+#   *args: input variable. Como cada algroitmo recibe diferentes inputs, esta es la forma de que pueda ser flexible el numero de input de las funciones
+#          a las cuales se les va a obtener el tiempo de ejecución.
+# salida:
+#   best_solution: tiempo de ejecución en segundos del algoritmo.
 def measure_time(f, *args):
     """Lo que importa de aqui es el hecho que **kwargs guarda el los inputs de la función f,
      lo cual es muy util en caso de que los algoritmos de busqueda que se miden tengan distinto numero de algoritmos
@@ -1192,6 +1203,14 @@ def measure_time(f, *args):
         return (val, (end_time - start_time)*(10 ** 3))
     return (end_time - start_time)*(10 ** 3)
 
+# Función que llama a los algoritmos greedy first, A estrella, A ponderada, steepest hill y stochasaticl hill.
+# entrada:
+#   tree: tupla que contiene las aristas y sus pesos
+#   start: Nodo de entrada
+#   opcion: numero (algoritmo) que el usuario decide ejecutar
+#   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
+# salida:
+#   llama a la función del algoritmo que el usuario decide ejecutar.
 def submenu_1(tree, start, opcion, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     heuristica = calcular_heuristica_distancia_de_linea_recta(goal)
@@ -1209,11 +1228,25 @@ def submenu_1(tree, start, opcion, step_by_step):
     else:
         return measure_time(branch_and_bound, tree, start, goal, step_by_step)
 
+# Función que llama al algoritmo Beam, con los requerimientos que este pide.
+# entrada:
+#   tree: tupla que contiene las aristas y sus pesos
+#   start: Nodo de entrada
+#   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
+# salida:
+#   Llama a la función que ejecuta al algoritmo Beam search.
 def submenu_2(tree, start, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
     return measure_time(beam_search, tree, start, goal, numero_de_nodos_para_elegir, step_by_step)
 
+# Función que llama al algoritmo simmulated annealing, con los requerimientos que este pide.
+# entrada:
+#   tree: tupla que contiene las aristas y sus pesos
+#   start: Nodo de entrada
+#   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
+# salida:
+#   llama a la función que ejectua al algoritmo simmulated annealing.
 def submenu_3(tree, start, step_by_step):
     solucion_inicial = generate_initial_solution(tree, start)
     temperatura_inicial = validate_int("¿Cual es la temperatura inicial? ")
