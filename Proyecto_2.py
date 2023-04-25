@@ -1283,18 +1283,6 @@ def menu():
         print('\ntree = ', tree[0], '\n')
         print('weights = ', tree[1], '\n')
 
-    switch = {
-        1: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-        2: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-        3: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-        4: submenu_2(tree, ciudad_origen, step_by_step),
-        5: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-        6: submenu_1(tree, ciudad_origen, opcion, step_by_step),
-        7: submenu_3(tree, ciudad_origen, step_by_step),
-        8: submenu_1(tree, ciudad_origen, opcion, step_by_step)
-    }
-
-<<<<<<< HEAD
     if opcion in [1,2,3,5,6,8]:
         resultado = submenu_1(tree, ciudad_origen, opcion, step_by_step)
     elif opcion == 2:
@@ -1309,10 +1297,6 @@ def menu():
     else:
         print(f"{resultado[0]} ademas se tardo {resultado[1]}")
         
-=======
-    return switch[opcion]
-
->>>>>>> 31c6db3efa01d30ae0327babf74f62e9f22b8848
 # Función que inicializa el programa y llama a menu.
 def main():
     menu()
