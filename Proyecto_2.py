@@ -1086,22 +1086,22 @@ def submenu_1(tree, start, opcion, step_by_step):
     heuristica = calcular_heuristica_distancia_de_linea_recta(goal)
     
     if opcion == 1:
-        return greedy(tree, start, goal, heuristica, step_by_step)
+        return measure_time(greedy(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
     elif opcion == 2:
-        return a_estrella(tree,start,goal,heuristica,step_by_step)
+        return measure_time(a_estrella(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
     elif opcion == 3:
-        return a_estrella_ponderada(tree,start,goal,heuristica,step_by_step)
+        return measure_time(a_estrella_ponderada(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
     elif opcion == 5:
-        return Steepest_Hill_Climb(tree, start, goal,step_by_step)
+        return measure_time(Steepest_Hill_Climb(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
     elif opcion == 6:
-        return Stochastic_Hill_Climb(tree, start, goal,step_by_step)
+        return measure_time(Stochastic_Hill_Climb(tree, start, goal, heuristica, step_by_step), tree, start, goal, heuristica, step_by_step)
     else:
-        return Branch_and_Bound(tree, start, goal, step_by_step)
+        return measure_time(Branch_and_Bound(tree, start, goal, step_by_step), tree, start, goal, step_by_step)
 
 def submenu_2(tree, start, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
-    return beam_search(tree, start, goal, numero_de_nodos_para_elegir, step_by_step)
+    return measure_time(beam_search(tree, start, goal, numero_de_nodos_para_elegir, step_by_step), tree, start, goal, numero_de_nodos_para_elegir, step_by_step)
 
 def submenu_3(tree, start, step_by_step):
     solucion_inicial = generate_initial_solution(tree, start)
@@ -1109,7 +1109,7 @@ def submenu_3(tree, start, step_by_step):
     temperatura_final = 0
     numero_de_iteraciones = validate_int("Ingrese el número de iteraciones por temperatura: ")
     porcentaje_para_reducir = validate_int("Ingrese el número de porcentaje para reducir la temperatura: ")
-    return simulated_annealling(tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir)
+    return measure_time(simulated_annealling(tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir), tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir, step_by_step)
 
 def validate_in(command) -> str:
     """Es una función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades"""
