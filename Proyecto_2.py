@@ -1208,7 +1208,7 @@ def submenu_1(tree, start, opcion, step_by_step):
 def submenu_2(tree, start, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
-    return measure_time(beam_search(tree, start, goal, numero_de_nodos_para_elegir, step_by_step), tree, start, goal, numero_de_nodos_para_elegir, step_by_step)
+    return measure_time(beam_search, tree, start, goal, numero_de_nodos_para_elegir, step_by_step)
 
 def submenu_3(tree, start, step_by_step):
     solucion_inicial = generate_initial_solution(tree, start)
@@ -1216,7 +1216,7 @@ def submenu_3(tree, start, step_by_step):
     temperatura_final = 0
     numero_de_iteraciones = validate_int("Ingrese el número de iteraciones por temperatura: ")
     porcentaje_para_reducir = validate_int("Ingrese el número de porcentaje para reducir la temperatura: ")
-    return measure_time(simulated_annealling(tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir), tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir, step_by_step)
+    return measure_time(simulated_annealing, tree, solucion_inicial, temperatura_inicial, numero_de_iteraciones, temperatura_final, porcentaje_para_reducir, step_by_step)
 
 def validate_in(command) -> str:
     """Es una función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades"""
