@@ -1175,6 +1175,10 @@ def branch_and_bound(tree, start, goal, step_by_step = False):
             print(f"queue: {queue}")
 
     # If we've found a solution, return the best solution we found
+    if best_solution:
+        return best_solution
+    else:
+        return "No se encontro camino"
 
 
 def measure_time(f, *args):
