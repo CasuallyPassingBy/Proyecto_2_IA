@@ -36,7 +36,6 @@
 import math 
 import random
 from time import time
-# Aqui segun yo va la libreria de TIEMPO, cuando la pongamos 
 
 ###############################
 ###############################
@@ -62,11 +61,12 @@ FUNCIONES O CLASES DE APOYO:
                  hill climbing. En esta funcion se pide a los usuarios los requerimientos particulares de cada algoritmo.
     - submenu_2: Función que llama al algoritmo Beam, con los requerimientos que este pide.
     - submenu_3: pass
-    - submenu_4: no hay?
-    - submenu_5: no entendi bien bien.
     - validate_in: Función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades.
     - validate_int: Función que se asegura que se ingreso un número no negativo.
-
+    - generate_initial_solution: Función que genera un camino entre el start node y sus hijos, formando un camino cerrado.
+    - generate_random_swap: Función que invierte el orden de los elemnetos de una lista de strings.
+    - decrease_temperature: Función que calcula el porcentaje con el que baja la temperatura
+    
 FUNCIONES O CLASES PRINCIPALES:
     - calcular_heuristica_distancia_de_linea_recta:     Calcula la heuristica para una ciudad objetivo
     - generate_states:  Función que forma las tuplas a partir de las matrizes.
@@ -79,6 +79,9 @@ FUNCIONES O CLASES PRINCIPALES:
     - Steepest_Hill_Climb:  Función que realiza el algoritmo de Steepest hill climb.
     - Stochastic_Hill_Climb:    Función que realiza el algoritmo de Stochastic hill climb.
     - simmulated_annealing:     Función que realiza el algoritmo simulated annealing.
+    - get_cost_solution:    Función que calcula el costo de un camino dado el árbol, para poder comparar los resultados entre los distintos algoritmos.
+    - simulated_annealling:     Función que realiza el algoritmo de simulated annealing.
+    - branch_and_bound:     Función que realiza el algoritmo de branch and bound.
     - menu:     Función que pregunta al usuario que algoritmo quiere utlizar, y donde pide y valida los requerimientos de cada algoritmo.
     - main:     Función que inicializa el programa y llama a menu. 
     
@@ -259,7 +262,7 @@ formed_graph = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]#Tlaxcala
 ]
 
-#Lista de nombres para el algorimo de #, 
+#Lista de nombres para los algoritmos. 
 names_formed_graph = [
     'CANCUN','VALLADOLID','FELIPE CARRILLO PUENTE','CAMPECHE','MERIDA','CHETUMAL',' FRANCISCO ESCARCEGA','CIUDAD DEL CARMEN','VILLA HERMOSA','TUXTLA','ACAYUCAN','TEHUANTEPEC','ALVARADO','OAXACA','TEHUACAN','PUERTO ANGEL',
     'IZUCAR DE MATAMOROS','PINOTEPA NACIONAL','ACAPULCO','CHILPANCINGO','IGUALA','PUEBLA','CORDOVA','VERACRUZ','CUERNAVACA','CIUDAD DE MÉXICO','CIUDAD ALTAMIRANO','ZIHUATANEJO','PLAYA AZUL','COLIMA','MANZANILLO','TOLUCA DE LERDO','PACHUCA DE SOTO','QUERETARO',
@@ -268,7 +271,7 @@ names_formed_graph = [
     'PIEDRAS NEGRAS','REYNOSA','SOTO LA MARINA','MONCLOVA','OJINAGA','TLAXCALA'
 ]
 
-
+#Diccionario con el nombre de las ciudades contenidas en el grafo y sus correspondientes coordenadas geograficas en formato de latitud y longitud.
 cities_coordinates = {
     'CANCUN': (21.1213285,-86.9192738)
     ,'VALLADOLID': (20.688114,-88.2204456)
@@ -937,138 +940,242 @@ def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
                 return path
             else:
                 return "No se pudo encontrar un camino"
-
+# Función que genera un camino entre el start node y sus hijos, formando un camino cerrado.
+# entrada:
+#   start: nombre de la ciudad de inicio
+#   tree: tupla que contiene las aristas y sus pesos
+# salida:
+#   El camino entre el start_node y sus sucesores, formando un camino cerrado.
 def generate_initial_solution(tree, start):
+    # Get all the neighbors of the start node and create a list of nodes to form a path
     path = [edge[1] for edge in tree[0] if edge[0] == start]
+    # Insert the start node at the beginning and end of the path to make it circular
     path.insert(0, start)
     path.append(start)
-    # print(path)
+    # Convert the path into a list of tuples, where each tuple represents an edge in the path
     tuples_sol = []
     for path_index in range(len(path) - 1):
         node1 = path[path_index]
         node2 = path[path_index + 1]
         tuples_sol.append((node1, node2))
 
+    # Check if each edge in the path is present in the given tree
     for tuple_sol in tuples_sol:
         if tuple_sol not in tree[0]:
+            # If an edge is not present in the tree, return an empty list indicating
+            # that an initial solution cannot be generated
             return []
+    # If all the edges in the path are present in the tree, return the path
     return path
 
+#  Función que invierte el orden de los elementos de una lista de strings.
+# entrada:
+#   solution: Una lista de strings.
+# salida:
+#   new_solution: Una nueva lista de strings con el orden modificado.
 def generate_random_swap(solution:list[str]):
+    # Select two distinct indices between the first and second-to-last elements of the input solution list
     indeces = random.sample(range(1, len(solution) - 1), 2)
+    # Get the values of the elements at the selected indices
     value1 = solution[indeces[0]]
     value2 = solution[indeces[1]]
+    # Create a copy of the input solution list
     new_solution = solution.copy()
+    # Swap the values of the elements at the selected indices in the copied list
     new_solution[indeces[0]], new_solution[indeces[1]] = value2, value1
+    # Return the copied list with the swapped values
     return new_solution
 
+
+# Función que calcula el porcentaje con el que baja la temperatura
+# entrada:
+#   temp: Un float que te dice la temperatura inical.
+#   decrease_percentage_of_temp: Un float que te dice 
+# salida:
+#   decrease_percentage: Porcentaje que baja la temperatura.
 def decrease_temperature(temp, decrease_percentage_of_temp):
     decrease_percentage = 100 * float(decrease_percentage_of_temp)/float(temp)
     return decrease_percentage
 
-def get_cost_solution(tree, Path) -> int:
-    """Lo que hace esta función es calcular el costo de un camino dado el árbol, 
-    para poder comparar los resultados entre los distintos algoritmos"""
 
+
+# Función que calcula el costo de un camino dado el árbol, para poder comparar los resultados entre los distintos algoritmos
+# entrada:
+#   Tree: Tupla que contiene las aristas y sus pesos
+#   Path: Camino al cual se le va a calcular un costo
+# salida:
+#   cost: int que representa el valor numerico del costo del camino.
+
+def get_cost_solution(tree, Path) -> int:
+    # Initialize the cost to 0 and make a copy of the path to avoid modifying the original
     cost = 0
     path = Path.copy()
-
+    # If the path is empty, return the cost of 0
     if path == []:
         return cost
-
+    # Pop the first node from the path and iterate through the weights in the tree
     node = path.pop(0)
     while path:
         for weights in tree[1]:
+            # If the weight doesn't start at the current node, skip to the next weight
             if weights[0] != node:
                 continue
+            # Iterate through the connections in the weight
             for connections in weights[1]:
+                # If the connection doesn't end at the next node in the path, skip to the next connection
                 if connections[0] != path[0]:
                     continue
+                # Add the weight of the connection to the cost and break out of the inner loop
                 cost += connections[1]
                 break
+            # Break out of the outer loop
             break
+        # Pop the next node from the path
         node = path.pop(0)
+    # Return the final cost
     return cost
 
-def simulated_annealling(tree, initial_sol, initial_temperature, stop_temperature, iterations, decrease_percentage_of_temp):
+# Función que realiza el algoritmo de simulated annealing.
+# entrada:
+#   Tree: Tupla que contiene las aristas y sus pesos
+#   initial_sol: Solución inicial.
+#   initial_temperature: Temperatura inicial del problema
+#   stop_temperature: Temperatura en la que se detiene el algoritmo.
+#   iterations: Número de iteraciones que se van a hacer.
+#   decrease_percentage_of_temp: Porcentaje en el que disminuye la temperatura
+# salida:
+#   current_solution: camino encontrado por el algoritmo una vez que finaliza su ejecución.
+def simulated_annealing(tree, initial_sol, initial_temperature, stop_temperature, iterations, decrease_percentage_of_temp):
+    # Set the initial temperature and current solution
     temperature = initial_temperature
     current_solution = initial_sol
+    
+    # Continue until the stop temperature is reached
     while temperature >= stop_temperature:
+        # Perform a certain number of iterations at each temperature
         for iteration in range(iterations):
+            # Generate a new solution by swapping two random elements in the current solution
             new_random_solution = generate_random_swap(current_solution)
-            current_solution_cost = get_cost_solution(tree,current_solution)
-            new_random_solution_cost = get_cost_solution(tree,new_random_solution)
+            
+            # Get the costs of the current solution and the new solution
+            current_solution_cost = get_cost_solution(tree, current_solution)
+            new_random_solution_cost = get_cost_solution(tree, new_random_solution)
+            
+            # Calculate the difference in cost between the two solutions
             difference_of_costs = current_solution_cost - new_random_solution_cost
+            
+            # If the new solution is better, replace the current solution with it
             if difference_of_costs >= 0:
-                current_solution = new_random_solution # if this happens that means we got a better solution
+                current_solution = new_random_solution 
             else:
-                acceptance_probability = math.exp(difference_of_costs/temperature)
-                # Generate the acceptance probability of the accepting the worse solution
-                uniform_random_number = random.uniform(0,1)
-                # Generate a random number to test if we are accepting the worse solution
+                # Calculate the acceptance probability for the worse solution
+                acceptance_probability = math.exp(difference_of_costs / temperature)
+                
+                # Generate a random number and compare it to the acceptance probability
+                uniform_random_number = random.uniform(0, 1)
                 if uniform_random_number <= acceptance_probability:
                     current_solution = new_random_solution
-
+        
+        # Decrease the temperature
         alpha = decrease_temperature(temperature, decrease_percentage_of_temp)
         temperature = int(temperature - alpha)
 
+    # Return the best solution found
     return current_solution
 
+# Función que realiza el algoritmo branch and bound.
+# entrada:
+#   start: nombre de la ciudad de inicio
+#   goal: nombre de la ciudad meta
+#   tree: tupla que contiene las aristas y sus pesos
+#   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
+# salida:
+#   best_solution: Camino encontrado por el algoritmo.
 def branch_and_bound(tree, start, goal, step_by_step = False):
     reached_goal = False
     minimum_cost_reached = 0
     best_solution = []
 
+    # If the start node is already the goal node, return it as the solution
     if start == goal:
         return [start]
+
+    # Create a queue and initialize it with the starting node
     queue = [[start]]
 
+    # Function to filter out paths that have a higher cost than the minimum cost reached so far
     def path_checker(path):
         return (path[1] < minimum_cost_reached) or (path[0][-1] == goal and path[1] == minimum_cost_reached)
 
+    # While there are still paths in the queue
     while queue:
-
+        # Pop the first path in the queue
         path = queue.pop(0)
-        
+
+        # Get the current node in the path
         current_node = path[-1]
+
+        # Get the neighbors of the current node
         neighbors = [edge[1] for edge in tree[0] if edge[0] == current_node]
+
+        # If step-by-step is enabled, print information about the current path and its neighbors
         if step_by_step:
             print("-------------")
             print(f"current path: {path}")
             print(f"neighbors of {current_node}: {neighbors}")
+
+        # Initialize an empty list to store the paths that we will add to the queue
         paths = []
 
+        # For each neighbor of the current node
         for neighbor in neighbors:
+            # Create a new path by copying the current path and appending the neighbor to it
             neighbor_path = path.copy()
             neighbor_path.append(neighbor)
+
+            # If step-by-step is enabled, print information about the new path
             if step_by_step:
                 print(F"neighbor path: {neighbor_path}")
+
+            # Calculate the cost of the new path
             neighbor_path_cost = get_cost_solution(tree, neighbor_path)
+
+            # Add the new path and its cost to the list of paths
             paths.append((neighbor_path, neighbor_path_cost))
 
+            # If the neighbor is the goal node
             if neighbor == goal:
+                # If this is the first time we reach the goal node
                 if not reached_goal:
                     reached_goal = True
                     minimum_cost_reached = neighbor_path_cost
                     best_solution = neighbor_path
+
+                    # If step-by-step is enabled, print information about the new minimum cost
                     if step_by_step:
                         print(f"goal reached and the minimum path cost is {minimum_cost_reached}")
+                # If we've reached the goal node before, but this path has a lower cost
                 elif minimum_cost_reached > neighbor_path_cost:
                     minimum_cost_reached = neighbor_path_cost
                     best_solution = neighbor_path
 
-
+        # If we've already reached the goal node, filter the paths to only include those with a lower cost than the minimum cost reached so far
         if reached_goal:
             filtered_paths = list(filter(path_checker, paths))
             final_paths = list(map(lambda x: x[0], filtered_paths))
+        # If we haven't reached the goal node yet, just take all the paths we've found so far
         else:
             final_paths =list(map(lambda x: x[0], paths))
+
+        # Add the final paths to the queue
         queue += final_paths
-        # print(f"queue: {queue}")
-    if best_solution:
-        return best_solution
-    else:
-        return "No se encontro camino"
+
+        # If step-by-step is enabled, print information about the new queue
+        if step_by_step:
+            print(f"queue: {queue}")
+
+    # If we've found a solution, return the best solution we found
+
 
 def measure_time(f, *args):
     """Lo que importa de aqui es el hecho que **kwargs guarda el los inputs de la función f,
