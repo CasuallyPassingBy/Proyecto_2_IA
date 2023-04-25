@@ -6,7 +6,7 @@
     Mauricio Moscoso Mandujano
     Fernando Ruiz de Huidobro Zapata
     26-abril-2023
-    version 0.01
+    version 1.1
 
     El presente codigo calcula la distancia euclideana entre dos ciudades 
     de los Estados Unidos Mexicanos, utilizando las coordenadas geograficas 
