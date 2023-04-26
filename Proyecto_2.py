@@ -358,7 +358,7 @@ cities_coordinates = {
 #   goal = tupla que contiene la latitud y longitud de la ciudad destino
 # salida:
 #   regresa el valor numerico de la distancia haversine redondeado
-
+#creador: Alex Laphond
 def haversine_distance_between_cities(origin,goal):
     constante_R = 6371
     lat1 = origin[0]*((math.pi)/180)
@@ -379,6 +379,7 @@ def haversine_distance_between_cities(origin,goal):
 #   goal = nombre de la ciudad meta
 # salida:
 #   regresa el valor númerico de la distancia haversine redondeado
+#creador: Mau Moscoso
 def haversine_heuristic(origin, goal):
     origin_coordinates = cities_coordinates[origin]
     goal_coordinates = cities_coordinates[goal]
@@ -391,6 +392,7 @@ def haversine_heuristic(origin, goal):
 # salida:
 #   regresa un diccionario con los valores numericos de la heuristica para la ciudad objetivo
 #       introducida por el usuario
+#creador: Fernando Ruiz
 def calcular_heuristica_distancia_de_linea_recta(goal):
     # obtiene las coordenadas de la ciudad destino
     coordinate_goal = cities_coordinates[goal.upper()]
@@ -419,7 +421,7 @@ def calcular_heuristica_distancia_de_linea_recta(goal):
 # Regresa una lista con dos entrada 
 #   nodes_tuples = La lista donde se encuantran las relaciones
 #   node_connection_weights = La lista donde se encuantran las relaciones con pesos.
-
+#crador: Alex Laphond
 def generate_states(graph, available_nodes_names):
     nodes_tuples = []
     nodes_connection_weights = []
@@ -445,6 +447,7 @@ def generate_states(graph, available_nodes_names):
 #   huerisic: una función que toma dos nodos y estima la distancia entre ellos
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la heuristica
+#creador = Alex Laphond
 def greedy(tree, start, goal, h_sld, step_by_step = False):
     if start == goal:
         # returns the path along with its transition cost
@@ -530,6 +533,7 @@ def greedy(tree, start, goal, h_sld, step_by_step = False):
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la heuristica
 #   cost: es el costo del camino según la euristica y el costo de transisión entre nodos
+#creador: Alex Laphond
 def a_estrella(tree,start,goal, h_sld, step_by_step = False):
     
     if start == goal:
@@ -643,7 +647,8 @@ def a_estrella(tree,start,goal, h_sld, step_by_step = False):
 #       la distancia de la linea recta, hasta la ciudad meta
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la heuristica
-#   cost: es el costo del camino según la euristica y el costo de transisión entre nodos     
+#   cost: es el costo del camino según la euristica y el costo de transisión entre nodos  
+# creador: Fernando Ruiz   
 def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
     
     if start == goal:
@@ -759,6 +764,7 @@ def a_estrella_ponderada(tree,start,goal, h_sld, step_by_step = False):
 #   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la heuristica.
+#creador: Fernando Ruiz
 def beam_search(tree, start_node, goal, numero_de_nodos_para_elegir, heuristic = haversine_heuristic, step_by_step = False):
     # Initialize an empty queue and the start state.
     if start_node == goal:
@@ -811,7 +817,7 @@ def beam_search(tree, start_node, goal, numero_de_nodos_para_elegir, heuristic =
 #   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la heuristica y el algorimto o un mensaje de error.
-
+#creador: Fernando Ruiz
 def Steepest_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
     if step_by_step:
         print("--------")
@@ -857,7 +863,7 @@ def Steepest_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
 #   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
 # salida:
 #   path: es el camino encontrado con el menor peso a partir de la heuristica y el algorimto.
-
+#creador: Mauricio Moscoso
 def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
     if step_by_step:
         print("------------")
@@ -901,6 +907,7 @@ def Stochastic_Hill_Climb(tree, start, goal, heuristic, step_by_step = False):
 #   tree: tupla que contiene las aristas y sus pesos
 # salida:
 #   El camino entre el start_node y sus sucesores, formando un camino cerrado.
+#creador: Mauricio Moscoso
 def generate_initial_solution(tree, start):
     # Get all the neighbors of the start node and create a list of nodes to form a path
     path = [edge[1] for edge in tree[0] if edge[0] == start]
@@ -928,6 +935,7 @@ def generate_initial_solution(tree, start):
 #   solution: Una lista de strings.
 # salida:
 #   new_solution: Una nueva lista de strings con el orden modificado.
+#creador: Mauricio Moscoso
 def generate_random_swap(solution:list[str]):
     # Select two distinct indices between the first and second-to-last elements of the input solution list
     indeces = random.sample(range(1, len(solution) - 1), 2)
@@ -948,6 +956,7 @@ def generate_random_swap(solution:list[str]):
 #   decrease_percentage_of_temp: Un float que te dice 
 # salida:
 #   decrease_percentage: Porcentaje que baja la temperatura.
+#creador: Mauricio Moscoso
 def decrease_temperature(temp, decrease_percentage_of_temp):
     decrease_percentage = 100 * float(decrease_percentage_of_temp)/float(temp)
     return decrease_percentage
@@ -960,7 +969,7 @@ def decrease_temperature(temp, decrease_percentage_of_temp):
 #   Path: Camino al cual se le va a calcular un costo
 # salida:
 #   cost: int que representa el valor numerico del costo del camino.
-
+#creador: Fernando Ruiz
 def get_cost_solution(tree, Path) -> int:
     # Initialize the cost to 0 and make a copy of the path to avoid modifying the original
     cost = 0
@@ -1000,6 +1009,7 @@ def get_cost_solution(tree, Path) -> int:
 #   decrease_percentage_of_temp: Porcentaje en el que disminuye la temperatura
 # salida:
 #   current_solution: camino encontrado por el algoritmo una vez que finaliza su ejecución.
+#creador: Mauricio Moscoso
 def simulated_annealing(tree, initial_sol, initial_temperature, stop_temperature, iterations, decrease_percentage_of_temp, step_by_step = False):
     # Set the initial temperature and current solution
     temperature = initial_temperature
@@ -1054,6 +1064,7 @@ def simulated_annealing(tree, initial_sol, initial_temperature, stop_temperature
 #   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
 # salida:
 #   best_solution: Camino encontrado por el algoritmo.
+#creador: Mauricio Moscoso
 def branch_and_bound(tree, start, goal, step_by_step = False):
     reached_goal = False
     minimum_cost_reached = 0
@@ -1151,6 +1162,7 @@ def branch_and_bound(tree, start, goal, step_by_step = False):
 #          a las cuales se les va a obtener el tiempo de ejecución.
 # salida:
 #   best_solution: tiempo de ejecución en segundos del algoritmo.
+#creador: Mauricio Moscoso
 def measure_time(f, *args):
     """Lo que importa de aqui es el hecho que **kwargs guarda el los inputs de la función f,
      lo cual es muy util en caso de que los algoritmos de busqueda que se miden tengan distinto numero de algoritmos
@@ -1170,6 +1182,7 @@ def measure_time(f, *args):
 #   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
 # salida:
 #   llama a la función del algoritmo que el usuario decide ejecutar.
+#creador: Alex Laphond
 def submenu_1(tree, start, opcion, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     heuristica = calcular_heuristica_distancia_de_linea_recta(goal)
@@ -1194,6 +1207,7 @@ def submenu_1(tree, start, opcion, step_by_step):
 #   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
 # salida:
 #   Llama a la función que ejecuta al algoritmo Beam search.
+#creador: Alex Laphond
 def submenu_2(tree, start, step_by_step):
     goal = validate_in("Ingrese la ciudad meta: ")
     numero_de_nodos_para_elegir = validate_int("¿Cuantos nodos se deben elegir por iteración: ")
@@ -1206,6 +1220,7 @@ def submenu_2(tree, start, step_by_step):
 #   step_by_step: Booleano que se pregunta si el usuario quiere que se muestre paso a paso el algoritmo.
 # salida:
 #   llama a la función que ejectua al algoritmo simmulated annealing.
+#creador: Alex Laphond
 def submenu_3(tree, start, step_by_step):
     solucion_inicial = generate_initial_solution(tree, start)
     temperatura_inicial = validate_int("¿Cual es la temperatura inicial? ")
@@ -1219,6 +1234,7 @@ def submenu_3(tree, start, step_by_step):
 #   command: El nombre de la ciudad que se va a validar en la lista de ciudades
 # salida:
 #   city:  El nombre de la ciudad si es válido o un mensaje de error
+#creador: Fernando Ruiz
 def validate_in(command) -> str:
     """Es una función que se asegura que el nombre ingresado este dentro de los nombres de las ciudades"""
     while True:
@@ -1233,6 +1249,7 @@ def validate_in(command) -> str:
 #   command: El número que se va a validar que sea válido
 # salida:
 #   city:  El número si es válido o un mensaje de error.
+#creador: Fernando Ruiz
 def validate_int(command) -> int:
     """Es una función que se asegura que se ingreso un número no negativo"""
     while True:
@@ -1249,6 +1266,7 @@ def validate_int(command) -> int:
 #   N/A
 # salida:
 #   Llamar las funciones pertinentes que dependiendo del algoritmo que el usuario quiera ejecutar.
+#creador: Alex Laphond
 def menu():
 
     ciudad_origen = validate_in("\nIngrese la ciudad de entrada: ")
