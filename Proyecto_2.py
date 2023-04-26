@@ -1171,8 +1171,8 @@ def measure_time(f, *args):
     val = f(*args)
     end_time = time()
     if val is not None:
-        return (val, (end_time - start_time)*(10 ** 6))
-    return (end_time - start_time)*(10 ** 6)
+        return (val, (end_time - start_time))
+    return (end_time - start_time)
 
 # Función que llama a los algoritmos greedy first, A estrella, A ponderada, steepest hill y stochasaticl hill.
 # entrada:
