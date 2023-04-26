@@ -1000,7 +1000,7 @@ def get_cost_solution(tree, Path) -> int:
 #   decrease_percentage_of_temp: Porcentaje en el que disminuye la temperatura
 # salida:
 #   current_solution: camino encontrado por el algoritmo una vez que finaliza su ejecución.
-def simulated_annealing(tree, initial_sol, initial_temperature, stop_temperature, iterations, decrease_percentage_of_temp):
+def simulated_annealing(tree, initial_sol, initial_temperature, stop_temperature, iterations, decrease_percentage_of_temp, step_by_step = False):
     # Set the initial temperature and current solution
     temperature = initial_temperature
     current_solution = initial_sol
@@ -1008,24 +1008,32 @@ def simulated_annealing(tree, initial_sol, initial_temperature, stop_temperature
     # Continue until the stop temperature is reached
     while temperature >= stop_temperature:
         # Perform a certain number of iterations at each temperature
+        if step_by_step:
+            print(f"temperatura: {temperature}")
+            print("--------------")
         for iteration in range(iterations):
+            if step_by_step:
+                print(f"iteración: {iteration}")
             # Generate a new solution by swapping two random elements in the current solution
             new_random_solution = generate_random_swap(current_solution)
-            
+            if step_by_step:
+                print(f"current solution: {current_solution}")
+                print(f"new solution: {new_random_solution}")
             # Get the costs of the current solution and the new solution
             current_solution_cost = get_cost_solution(tree, current_solution)
             new_random_solution_cost = get_cost_solution(tree, new_random_solution)
-            
+            if step_by_step:
+                print(f"current solution cost: {current_solution_cost}")
+                print(f"new solution cost: {new_random_solution_cost}")
             # Calculate the difference in cost between the two solutions
             difference_of_costs = current_solution_cost - new_random_solution_cost
             
             # If the new solution is better, replace the current solution with it
             if difference_of_costs >= 0:
-                current_solution = new_random_solution 
+                current_solution = new_random_solution
             else:
                 # Calculate the acceptance probability for the worse solution
                 acceptance_probability = math.exp(difference_of_costs / temperature)
-                
                 # Generate a random number and compare it to the acceptance probability
                 uniform_random_number = random.uniform(0, 1)
                 if uniform_random_number <= acceptance_probability:
